@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "export NODE_ENV=development; nodemon src/main.js",
+    "prod": "export NODE_ENV=production; node src/main.js",
+    "reformat": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-jwt": "^8.5.1",
+    "f": "^1.4.0",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "passport": "^0.7.0",
+    "passport-cas2": "^0.0.12"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "nodemon": "^3.1.9",
+    "prettier-eslint": "^16.3.0"
+  }
+}
