@@ -1,15 +1,47 @@
-import { useState } from "react";
-// import { Navigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 // // import User from '../user.tsx';
-// import { AuthContext } from "../auth.jsx";
+import { AuthContext } from "../auth.jsx";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const handleLogin = (event) => {
     // Handle login logic
     event.preventDefault();
+    fetch('http://localhost:8080/api/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      if(data.message === "Success") {
+        const decodedToken = jwtDecode(data.token);
+        console.log('Decoded Token:', decodedToken);
+        login(decodedToken);
+        navigate('/dashboard');
+      }
+      else if(data.message === "Invalid email or password") {
+        console.log("Invalid email or password");
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+    // console.log(email, password);
+    setEmail("");
+    setPassword("");
   };
   return (
     <>

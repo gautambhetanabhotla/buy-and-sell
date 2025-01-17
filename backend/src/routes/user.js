@@ -53,11 +53,15 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+    console.log("RECEIVED LOGIN REQUEST");
     const user = userModel.findOne({ email: req.body.email });
     user.exec().then((user) => {
         bcrypt.compare(req.body.password, user.passwordHash, (err, result) => {
             if(err) {
-                res.status(500).json(err).send();
+                res.status(500).json({
+                    error: err,
+                    message: "Internal server error",
+                }).send();
                 return;
             }
             if(result === true) {
@@ -66,12 +70,15 @@ router.post('/login', (req, res) => {
                     email: user.email,
                 }, env.server.jwtsecret);
                 res.status(200).json({
+                    message: "Success",
                     token: token,
                 }).send();
                 return;
             }
             else {
-                res.status(401).send();
+                res.status(401).json({
+                    message: "Invalid email or password",
+                }).send();
                 return;
             }
         });
