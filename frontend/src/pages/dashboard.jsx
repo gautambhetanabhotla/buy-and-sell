@@ -1,28 +1,35 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 import { AuthContext } from "../auth.jsx";
 
 const DashboardPage = () => {
-  const ctx = useContext(AuthContext);
+  const { token, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    if(!ctx.user) {
-      navigate('/');
-    }
-  }, [ctx.user, navigate]);
+  const [decodedToken, setDecodedToken] = useState(null);
 
-  if(!ctx.user) {
-    return <p>Loading...</p>;
-  }
-  // const user = jwtDecode(token);
-  // console.log(`DECODED TOKEN RA ${ctx.user}`);
+  useEffect(() => {
+    if (!loading) {
+      if (!token) {
+        navigate('/');
+      } else {
+        try {
+          const decoded = jwtDecode(token);
+          setDecodedToken(decoded);
+          console.log(decoded);
+        } catch (error) {
+          console.error('Invalid token:', error);
+          navigate('/');
+        }
+      }
+    }
+  }, [token, loading, navigate]);
+
   return (
     <>
       <h1>Dashboard Page</h1>
-      <h2>You are logged in as: {ctx.user.email}</h2>
+      <h2>You are logged in as: {decodedToken.email}</h2>
     </>
   );
 };

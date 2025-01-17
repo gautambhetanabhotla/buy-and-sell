@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 // // import User from '../user.tsx';
@@ -27,7 +27,8 @@ const LoginForm = () => {
     .then(data => {
       console.log(data);
       if(data.message === "Success") {
-        const decodedToken = jwtDecode(data.token);
+        // const decodedToken = jwtDecode(data.token);
+        const decodedToken = data.token;
         console.log('Decoded Token:', decodedToken);
         login(decodedToken);
         navigate('/dashboard');
