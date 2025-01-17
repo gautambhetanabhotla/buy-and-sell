@@ -9,4 +9,4 @@ export default {
     jsxBracketSameLine: true,
     arrowParens: 'always',
     proseWrap: 'preserve',
-  };
+};

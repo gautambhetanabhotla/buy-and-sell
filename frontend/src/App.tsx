@@ -1,5 +1,6 @@
 // import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useState, useContext } from 'react';
 
 import Navbar from './navbar.tsx';
 import LoginSignupPage from './pages/loginsignup.tsx';
@@ -10,13 +11,15 @@ import SupportPage from './pages/support.tsx';
 import DashboardPage from './pages/dashboard.tsx';
 import CartPage from './pages/cart.tsx';
 
-function App() {
+// import User from './user.tsx';
+import { AuthProvider } from './auth.tsx';
+
+const App = () => {
+  // const { isAuthenticated, user, login, logout } = useContext(AuthContext);
   return (
     <>
       <BrowserRouter>
-        <Navbar />
         <Routes>
-          <Route path="/" Component={LoginSignupPage}></Route>
           <Route path="/dashboard" Component={DashboardPage}></Route>
           <Route path="/items" Component={ItemsPage}></Route>
           <Route path="/orders" Component={OrdersPage}></Route>
@@ -25,8 +28,11 @@ function App() {
           <Route path="/cart" Component={CartPage}></Route>
         </Routes>
       </BrowserRouter>
+      <AuthProvider>
+        <LoginSignupPage/>
+      </AuthProvider>
     </>
   );
-}
+};
 
 export default App;

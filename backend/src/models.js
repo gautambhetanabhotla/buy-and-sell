@@ -38,7 +38,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Email is required'],
         unique: true,
-        match: [/^[a-zA-Z0-9._%+-]+@(students|research)*\.iiit\.ac\.in$/, 'Invalid/non-IIIT email'],
+        match: [
+            /^[a-zA-Z0-9._%+-]+@(students|research)*\.iiit\.ac\.in$/,
+            'Invalid/non-IIIT email',
+        ],
     },
     age: {
         type: Number,
@@ -70,9 +73,9 @@ const userSchema = new mongoose.Schema({
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'User',
                     required: true,
-                }
-            }
-        }
+                },
+            },
+        },
     ],
 });
 
@@ -96,7 +99,7 @@ const orderSchema = new mongoose.Schema({
     otpHash: {
         type: String,
         required: true,
-    }
+    },
 });
 
 const orderModel = mongoose.model('Order', orderSchema);
