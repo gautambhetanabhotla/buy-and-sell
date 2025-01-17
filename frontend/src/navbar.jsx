@@ -1,29 +1,6 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 
-import { AuthContext } from "./auth.jsx";
-
-const Navbar = () => {
-  const { token, loading } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [decodedToken, setDecodedToken] = useState(null);
-
-  useEffect(() => {
-    if (!loading) {
-      if (!token) {
-        navigate('/');
-      } else {
-        try {
-          const decoded = jwtDecode(token);
-          setDecodedToken(decoded);
-          console.log(decoded);
-        } catch (error) {
-          console.error('Invalid token:', error);
-          navigate('/');
-        }
-      }
-    }
-  }, [token, loading, navigate]);
+const Navbar = ({logoutFn}) => {
   return (
     <nav>
       <ul>
@@ -44,6 +21,9 @@ const Navbar = () => {
         </li>
         <li>
           <NavLink to="/support">Support</NavLink>
+        </li>
+        <li>
+          <button onClick={logoutFn}>Logout</button>
         </li>
       </ul>
     </nav>

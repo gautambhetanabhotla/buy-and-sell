@@ -1,7 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// import { jwtDecode } from "jwt-decode";
 
-const CartPage = () => {
+import { AuthContext } from "../auth.jsx";
+import Navbar from "../navbar.jsx";
+
+const PageTemplate = ({ children }) => {
   const { decodedToken, loading, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   // const [loggedOut, setLoggedOut] = useState(false);
@@ -21,11 +25,17 @@ const CartPage = () => {
   if (loading /* || loggedOut */ ) {
     return <p>Loading...</p>;
   }
+
+  const childrenWithProps = React.Children.map(children, child => {
+    return React.cloneElement(child, { decodedToken });
+  });
+
   return (
     <>
-      <h1>Cart Page</h1>
+      <Navbar logoutFn={handleLogout}/>
+      { childrenWithProps }
     </>
   );
 };
 
-export default CartPage;
+export default PageTemplate;
