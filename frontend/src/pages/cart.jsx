@@ -1,30 +1,18 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import PageTemplate from "./pagetemplate.jsx";
 
-const CartPage = () => {
-  const { decodedToken, loading, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-  // const [loggedOut, setLoggedOut] = useState(false);
-
-  const handleLogout = () => {
-    // setLoggedOut();
-    logout();
-    navigate('/');
-  }
-
-  useEffect(() => {
-    if (!loading && !decodedToken) {
-      navigate('/');
-    }
-  }, [decodedToken, loading, navigate]);
-
-  if (loading /* || loggedOut */ ) {
-    return <p>Loading...</p>;
-  }
+const Cart = ({ decodedToken }) => {
   return (
     <>
       <h1>Cart Page</h1>
     </>
+  );
+};
+
+const CartPage = () => {
+  return (
+    <PageTemplate>
+      <Cart />
+    </PageTemplate>
   );
 };
 

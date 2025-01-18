@@ -6,26 +6,30 @@ import { AuthContext } from "../auth.jsx";
 import Navbar from "../navbar.jsx";
 
 const PageTemplate = ({ children }) => {
-  const { decodedToken, loading, logout } = useContext(AuthContext);
+  const ctx = useContext(AuthContext);
   const navigate = useNavigate();
   // const [loggedOut, setLoggedOut] = useState(false);
 
   const handleLogout = () => {
     // setLoggedOut();
-    logout();
+    ctx.logout();
     navigate('/');
   }
 
   useEffect(() => {
-    if (!loading && !decodedToken) {
+    console.log("DECODED TOKEN EVALUATED AT PAGE LOAD", ctx.decodedToken);
+    // while(loading);
+    while(ctx.loading) console.log("loading state ", ctx.loading);
+    if (!ctx.loading && !ctx.decodedToken) {
       navigate('/');
     }
-  }, [decodedToken, loading, navigate]);
+  }, [ctx, navigate]);
 
-  if (loading /* || loggedOut */ ) {
+  if (ctx.loading /* || loggedOut */ ) {
     return <p>Loading...</p>;
   }
 
+  const decodedToken = ctx.decodedToken;
   const childrenWithProps = React.Children.map(children, child => {
     return React.cloneElement(child, { decodedToken });
   });

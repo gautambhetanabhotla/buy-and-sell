@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Email is required'],
         unique: true,
         match: [
-            /^[a-zA-Z0-9._%+-]+@(students|research)*\.iiit\.ac\.in$/,
+            /^[a-zA-Z0-9._%+-]+@(students\.|research\.)?iiit\.ac\.in$/,
             'Invalid/non-IIIT email',
         ],
     },
