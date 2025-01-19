@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 // import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 // // import User from '../user.tsx';
 import { AuthContext } from "../auth.jsx";
@@ -11,29 +12,21 @@ const LoginForm = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const handleLogin = (event) => {
-    // Handle login logic
     event.preventDefault();
-    fetch('http://localhost:8080/api/user/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
+    // console.log(email, password);
+    axios.post('/api/user/login', {
+      email: email,
+      password: password,
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      if(data.message === "Success") {
+    .then(response => {
+      if(response.data.message === "Success") {
         // const decodedToken = jwtDecode(data.token);
-        const decodedToken = data.token;
-        console.log('Decoded Token:', decodedToken);
-        login(decodedToken);
+        const Token = response.data.token;
+        console.log('Token:', Token);
+        login(Token);
         navigate('/dashboard');
       }
-      else if(data.message === "Invalid email or password") {
+      else if(response.data.message === "Invalid email or password") {
         console.log("Invalid email or password");
       }
     })
@@ -76,31 +69,23 @@ const SignupForm = () => {
   const navigate = useNavigate();
   const handleSignup = (event) => {
     event.preventDefault();
-    fetch('http://localhost:8080/api/user/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
-        age: age,
-        contactNumber: contactNumber,
-      }),
+    axios.post('/api/user/signup', {
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      age: age,
+      contactNumber: contactNumber,
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      if(data.message === "Success") {
-        // const decodedToken = jwtDecode(data.token);
-        const decodedToken = data.token;
-        console.log('Decoded Token:', decodedToken);
-        login(decodedToken);
-        navigate('/?mode=login');
+    .then(response => {
+      if(response.data.message === "Success") {
+        // const decodedToken = jwtDecode(response.data.token);
+        const Token = response.data.token;
+        console.log('Decoded Token:', Token);
+        login(Token);
+        navigate('/dashboard');
       }
-      else if(data.message === "Invalid email or password") {
+      else if(response.data.message === "Invalid email or password") {
         console.log("Invalid email or password");
       }
     })

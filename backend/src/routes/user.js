@@ -54,6 +54,7 @@ router.post('/signup', (req, res) => {
 
 router.post('/login', (req, res) => {
     console.log("RECEIVED LOGIN REQUEST");
+    console.log(req.body);
     const user = userModel.findOne({ email: req.body.email });
     user.exec().then((user) => {
         bcrypt.compare(req.body.password, user.passwordHash, (err, result) => {
@@ -65,6 +66,7 @@ router.post('/login', (req, res) => {
                 return;
             }
             if(result === true) {
+                // console.log("LOGIN SUCCESSFUL");
                 const token = jwt.sign({
                     id: user._id,
                     email: user.email,

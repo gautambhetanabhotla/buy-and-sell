@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import yaml from 'js-yaml';
 import fs from 'fs';
 import process from 'process';
-import cors from 'cors';
 
 import user_routes from './routes/user.js';
 import order_routes from './routes/order.js';
@@ -40,12 +39,6 @@ mongoose
 
 // Set up the server
 const App = express();
-App.use(
-    cors({
-        origin: envName === 'production' ? false : '*',
-        credentials: true,
-    }),
-);
 App.use('static', express.static('public'));
 App.use('/api/user', user_routes);
 App.use('/api/item', item_routes);

@@ -1,5 +1,5 @@
 // import './App.css';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 // import { useState, useContext } from "react";
 
 // import Navbar from './navbar.tsx';

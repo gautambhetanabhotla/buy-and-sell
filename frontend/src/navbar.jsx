@@ -1,6 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-const Navbar = ({logoutFn}) => {
+const Navbar = ({ctx, decodedToken}) => {
+  const navigate = useNavigate();
   return (
     <nav>
       <ul>
@@ -23,7 +24,7 @@ const Navbar = ({logoutFn}) => {
           <NavLink to="/support">Support</NavLink>
         </li>
         <li>
-          <button onClick={logoutFn}>Logout</button>
+          <button onClick={() => {ctx.logout(); console.log("navigating"); navigate('/?mode=login')}}>Logout</button>
         </li>
       </ul>
     </nav>

@@ -9,6 +9,9 @@ const itemSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Price is required'],
     },
+    image: {
+        type: mongoose.Schema.Types.Buffer,
+    },
     description: {
         type: String,
     },

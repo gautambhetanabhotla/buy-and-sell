@@ -1,4 +1,5 @@
-import PageTemplate from "./pagetemplate.jsx";
+import Protected from "../auth.jsx";
+import Navbar from "../navbar.jsx";
 
 const Orders = ({ decodedToken }) => {
   return (
@@ -10,9 +11,10 @@ const Orders = ({ decodedToken }) => {
 
 const OrdersPage = () => {
   return (
-    <PageTemplate>
+    <Protected>
+      <Navbar />
       <Orders />
-    </PageTemplate>
+    </Protected>
   );
 };
 

@@ -1,4 +1,5 @@
-import PageTemplate from "./pagetemplate.jsx";
+import Protected from "../auth.jsx";
+import Navbar from "../navbar.jsx";
 
 const Cart = ({ decodedToken }) => {
   return (
@@ -10,9 +11,10 @@ const Cart = ({ decodedToken }) => {
 
 const CartPage = () => {
   return (
-    <PageTemplate>
+    <Protected>
+      <Navbar />
       <Cart />
-    </PageTemplate>
+    </Protected>
   );
 };
 
