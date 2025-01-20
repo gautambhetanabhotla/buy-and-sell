@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import env from '../main.js';
+import env from '../../main.js';
 import { userModel } from '../models.js';
 
 const router = express.Router();
@@ -20,15 +20,6 @@ router.get('/limit/:num', (req, res) => {
 router.get('/:id', (req, res) => {
     const user = userModel.findById(req.params.id);
     user.exec().then((user) => {
-        res.status(200).json(user).send();
-    }).catch((err) => {
-        res.status(500).json(err).send();
-    });
-});
-
-router.post('/', (req, res) => {
-    const user = new userModel(req.body);
-    user.save().then((user) => {
         res.status(200).json(user).send();
     }).catch((err) => {
         res.status(500).json(err).send();
@@ -63,25 +54,19 @@ router.post('/login', (req, res) => {
                     error: err,
                     message: "Internal server error",
                 }).send();
-                return;
             }
             if(result === true) {
-                // console.log("LOGIN SUCCESSFUL");
                 const token = jwt.sign({
                     id: user._id,
                     email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
                 }, env.server.jwtsecret);
-                res.status(200).json({
-                    message: "Success",
-                    token: token,
-                }).send();
-                return;
+                res.status(200).json({token: token}).send();
             }
             else {
-                res.status(401).json({
-                    message: "Invalid email or password",
-                }).send();
-                return;
+                console.log("sending 401 response");
+                res.status(401).json().send();
             }
         });
     }).catch((err) => {

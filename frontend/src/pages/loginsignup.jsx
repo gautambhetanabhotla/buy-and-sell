@@ -3,6 +3,11 @@ import { useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+
 // // import User from '../user.tsx';
 import { AuthContext } from "../auth.jsx";
 
@@ -11,48 +16,67 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const handleLogin = (event) => {
     event.preventDefault();
     // console.log(email, password);
+    setLoading(true);
     axios.post('/api/user/login', {
       email: email,
       password: password,
     })
     .then(response => {
-      if(response.data.message === "Success") {
-        // const decodedToken = jwtDecode(data.token);
+      if(response.status === 200) {
         const Token = response.data.token;
         console.log('Token:', Token);
         login(Token);
+        setLoading(false);
+        setIsError(false);
         navigate('/dashboard');
-      }
-      else if(response.data.message === "Invalid email or password") {
-        console.log("Invalid email or password");
       }
     })
     .catch(error => {
-      console.error(error);
+      setLoading(false);
+      setIsError(true);
+      if(error.status === 401) {
+        setErrorMsg("Invalid e-mail or password.");
+      }
+      else if(error.status === 500) {
+        setErrorMsg("User does not exist.");
+      }
     });
     // console.log(email, password);
-    setEmail("");
-    setPassword("");
+    
   };
   return (
     <>
+      <Backdrop
+        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
+        // onClick={() => {}}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <form onSubmit={handleLogin}>
-        <input
+        <TextField
+          label="Email"
           type="email"
-          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         /><br />
-        <input
+        <TextField
+          label="Password"
           type="password"
-          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          sx={{ mt: 1 }}
         /><br />
-        <button type="submit">Submit</button>
+        {isError && <Alert severity="error" sx={{ mt: 1 }}>
+          {errorMsg}
+        </Alert>}
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>Submit</Button>
       </form>
     </>
   );
@@ -67,8 +91,12 @@ const SignupForm = () => {
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const handleSignup = (event) => {
     event.preventDefault();
+    setLoading(true);
     axios.post('/api/user/signup', {
       email: email,
       password: password,
@@ -78,68 +106,78 @@ const SignupForm = () => {
       contactNumber: contactNumber,
     })
     .then(response => {
-      if(response.data.message === "Success") {
-        // const decodedToken = jwtDecode(response.data.token);
+      setLoading(false);
+      if(response.status === 200) {
         const Token = response.data.token;
-        console.log('Decoded Token:', Token);
         login(Token);
         navigate('/dashboard');
       }
-      else if(response.data.message === "Invalid email or password") {
+      else if(response.status === 401) {
         console.log("Invalid email or password");
       }
     })
     .catch(error => {
+      setLoading(false);
+      setIsError(true);
+      setErrorMsg(error.response.data.message);
       console.error(error);
     });
-    console.log(firstName, lastName, email, age, contactNumber, password);
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setAge("");
-    setContactNumber("");
-    setPassword("");
   };
   return (
     <>
+      <Backdrop
+        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
+        // onClick={() => {}}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <form onSubmit={handleSignup}>
-        <input
+        <TextField
           type="text"
-          placeholder="First Name"
+          label="First Name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
         /><br />
-        <input
+        <TextField
           type="text"
-          placeholder="Last Name"
+          label="Last Name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
+          sx={{ mt: 1 }}
         /><br />
-        <input
+        <TextField
           type="email"
-          placeholder="Email"
+          label="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          sx={{ mt: 1 }}
         /><br />
-        <input
+        <TextField
           type="number"
-          placeholder="Age"
+          label="Age"
           value={age}
           onChange={(e) => setAge(e.target.value)}
+          sx={{ mt: 1 }}
         /><br />
-        <input
+        <TextField
           type="number"
-          placeholder="Contact Number"
+          label="Contact Number"
           value={contactNumber}
           onChange={(e) => setContactNumber(e.target.value)}
+          sx={{ mt: 1 }}
         /><br />
-        <input
+        <TextField
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          sx={{ mt: 1 }}
         /><br />
-        <button type="submit">Submit</button>
+        {isError && <Alert severity="error" sx={{ mt: 1 }}>
+          {errorMsg}
+        </Alert>}
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>Submit</Button>
       </form>
     </>
   );
@@ -151,11 +189,26 @@ const LoginSignupPage = () => {
   const [isLogin, setIsLogin] = useState(queryParams.get('mode') !== 'signup');
   return (
     <>
-      <h1>Login/Sign up</h1>
-      {isLogin ? <LoginForm /> : <SignupForm />}
-      <button onClick={() => setIsLogin(!isLogin)}>
-        {isLogin ? "Sign up" : "Login"}
-      </button>
+      <Container maxWidth="sm">
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom fontStyle={{ fontWeight: "bold" }}>
+          {isLogin ? "Log in" : "Sign up"}
+          </Typography>
+          {isLogin ? <LoginForm /> : <SignupForm />}
+          <Typography
+            color="primary"
+            onClick={() => setIsLogin(!isLogin)}
+            sx={{
+              cursor: "pointer",
+              '&:hover': {
+                textDecoration: "underline",
+              },
+              mt: 2,
+            }}>
+            {isLogin ? "Don't have an account yet? Sign up" : "Have an account already? Log in"}
+          </Typography>
+        </Box>
+      </Container>
     </>
   );
 };

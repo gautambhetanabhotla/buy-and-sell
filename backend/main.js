@@ -4,9 +4,9 @@ import yaml from 'js-yaml';
 import fs from 'fs';
 import process from 'process';
 
-import user_routes from './routes/user.js';
-import order_routes from './routes/order.js';
-import item_routes from './routes/item.js';
+import user_routes from './src/routes/user.js';
+import order_routes from './src/routes/order.js';
+import item_routes from './src/routes/item.js';
 
 // Load environment variables
 const envName = process.env.NODE_ENV;
@@ -39,10 +39,18 @@ mongoose
 
 // Set up the server
 const App = express();
-App.use('static', express.static('public'));
+App.use(express.static('public'));
 App.use('/api/user', user_routes);
 App.use('/api/item', item_routes);
 App.use('/api/order', order_routes);
+
+const staticRoutes = ['/', '/dashboard', '/deliver', '/orders', '/items', '/cart', '/support'];
+
+staticRoutes.forEach((route) => {
+    App.get(route, (req, res) => {
+        res.sendFile('index.html', { root: 'public' });
+    });
+});
 
 App.listen(env.server.port, () => {
     console.log(`Server is running on port ${env.server.port}`);

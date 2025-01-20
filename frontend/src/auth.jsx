@@ -1,6 +1,6 @@
 import axios from "axios";
-import React, { createContext, useContext, useLayoutEffect, useMemo, useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { Navigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    console.log("LOGGING OUT");
+    // console.log("LOGGING OUT");
     setToken(null);
     delete axios.defaults.headers.common["Authorization"];
     localStorage.removeItem('token');
@@ -51,15 +51,14 @@ const AuthProvider = ({ children }) => {
 
 const Protected = ({ children }) => {
   const ctx = useContext(AuthContext);
-  console.dir(ctx);
-  const navigate = useNavigate();
+  // console.dir(ctx);
   let decodedToken;
   try {
-    console.dir(ctx.contextValue);
+    // console.dir(ctx.contextValue);
     decodedToken = jwtDecode(ctx.contextValue.token);
   }
-  catch (error) {
-    console.error(error);
+  catch {
+    // console.error(error);
     ctx.logout();
   }
   console.dir(decodedToken);
@@ -69,11 +68,13 @@ const Protected = ({ children }) => {
   });
 
   // Check if the user is authenticated
-  useLayoutEffect(() => {
-    if (!decodedToken) {
-      navigate("/?mode=login");
-    }
-  }, [ctx, decodedToken, navigate]);
+  // useLayoutEffect(() => {
+  //   if (!decodedToken) {
+  //     navigate("/?mode=login");
+  //   }
+  // }, [ctx, decodedToken, navigate]);
+
+  if(!decodedToken) return <Navigate to="/?mode=login" />;
 
   // If authenticated, render the child routes
   return <>{childrenWithProps}</>;

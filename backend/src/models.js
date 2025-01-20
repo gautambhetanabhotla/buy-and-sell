@@ -30,6 +30,8 @@ const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         default: 'Anonymous',
+        required: [true, "First name is required"],
+        minLength: [1, "First name must not be empty"],
     },
     lastName: {
         type: String,
@@ -38,7 +40,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: true,
+        unique: [true, 'Email is already in use'],
         match: [
             /^[a-zA-Z0-9._%+-]+@(students\.|research\.)?iiit\.ac\.in$/,
             'Invalid/non-IIIT email',

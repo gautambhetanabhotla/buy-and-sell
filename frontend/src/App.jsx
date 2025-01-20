@@ -1,6 +1,7 @@
 // import './App.css';
 import { Route, Routes } from "react-router-dom";
 // import { useState, useContext } from "react";
+import CssBaseline from "@mui/material/CssBaseline";
 
 // import Navbar from './navbar.tsx';
 import LoginSignupPage from "./pages/loginsignup.jsx";
@@ -17,6 +18,7 @@ import CartPage from "./pages/cart.jsx";
 const App = () => {
   return (
     <>
+      <CssBaseline />
       <Routes>
         <Route path="/" Component={LoginSignupPage}></Route>
         <Route path="/dashboard" Component={DashboardPage}></Route>

@@ -10,7 +10,7 @@ const Dashboard = ({ decodedToken }) => {
   return (
     <>
       <h1>DashboardPage</h1>
-      <h2>You are logged in as: {decodedToken.email}</h2>
+      <h2>You are logged in as: {decodedToken?.email}</h2>
     </>
   );
 }
