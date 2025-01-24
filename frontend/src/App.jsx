@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 // import { useState, useContext } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 
-// import Navbar from './navbar.tsx';
+// import Navbar from './navbar.jsx';
 import LoginSignupPage from "./pages/loginsignup.jsx";
 import OrdersPage from "./pages/orders.jsx";
 import ItemsPage from "./pages/items.jsx";
@@ -11,9 +11,6 @@ import DeliverPage from "./pages/deliver.jsx";
 import SupportPage from "./pages/support.jsx";
 import DashboardPage from "./pages/dashboard.jsx";
 import CartPage from "./pages/cart.jsx";
-
-// import User from './user.tsx';
-// import { AuthProvider, AuthContext } from "./auth.jsx";
 
 const App = () => {
   return (

@@ -9,9 +9,6 @@ const itemSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Price is required'],
     },
-    image: {
-        type: mongoose.Schema.Types.Buffer,
-    },
     description: {
         type: String,
     },
@@ -22,6 +19,10 @@ const itemSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    isOrdered: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 const itemModel = mongoose.model('Item', itemSchema);

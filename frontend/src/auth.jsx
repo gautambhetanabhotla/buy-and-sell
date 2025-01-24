@@ -7,17 +7,12 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   // State to hold the authentication token
-  const [token, setToken_] = useState(localStorage.getItem("token"));
-
-  // Function to set the authentication token
-  const setToken = (newToken) => {
-    setToken_(newToken);
-  };
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-      localStorage.setItem('token',token);
+      localStorage.setItem('token', token);
     } else {
       delete axios.defaults.headers.common["Authorization"];
       localStorage.removeItem('token');
@@ -51,7 +46,10 @@ const AuthProvider = ({ children }) => {
 
 const Protected = ({ children }) => {
   const ctx = useContext(AuthContext);
+  // const [decodedToken  , setDecodedToken] = useState(null);
   // console.dir(ctx);
+
+  // TO DO: GET RID OF THIS WARNING IN THE BELOW CODE, SETTING STATE WHILE NOT INSIDE USEEFFECT
   let decodedToken;
   try {
     // console.dir(ctx.contextValue);
@@ -61,18 +59,23 @@ const Protected = ({ children }) => {
     // console.error(error);
     ctx.logout();
   }
-  console.dir(decodedToken);
+  // console.dir(decodedToken);
+
+  // useEffect(() => {
+  //   try {
+  //       // console.dir(ctx.contextValue);
+  //       const decodedToken = jwtDecode(ctx.contextValue.token);
+  //       setDecodedToken(decodedToken);
+  //     }
+  //     catch {
+  //       // console.error(error);
+  //       ctx.logout();
+  //     }
+  // }, [ctx, ctx.contextValue.token]);
 
   const childrenWithProps = React.Children.map(children, child => {
     return React.cloneElement(child, { ctx, decodedToken });
   });
-
-  // Check if the user is authenticated
-  // useLayoutEffect(() => {
-  //   if (!decodedToken) {
-  //     navigate("/?mode=login");
-  //   }
-  // }, [ctx, decodedToken, navigate]);
 
   if(!decodedToken) return <Navigate to="/?mode=login" />;
 

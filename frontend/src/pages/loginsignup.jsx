@@ -1,5 +1,5 @@
-import { useState, useContext } from "react";
-// import { jwtDecode } from "jwt-decode";
+import { useState, useContext, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -119,6 +119,7 @@ const SignupForm = () => {
     .catch(error => {
       setLoading(false);
       setIsError(true);
+      console.log(error.response.data.message);
       setErrorMsg(error.response.data.message);
       console.error(error);
     });
@@ -187,6 +188,22 @@ const LoginSignupPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const [isLogin, setIsLogin] = useState(queryParams.get('mode') !== 'signup');
+  const ctx = useContext(AuthContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const tk = localStorage.getItem('token');
+    try {
+      const decoded = jwtDecode(tk);
+      console.log(decoded);
+      ctx.login(tk);
+      navigate('/dashboard');
+    } catch (err) {
+      console.log(err);
+      ctx.logout();
+    }
+  }, [ctx, navigate]);
+  // const tk = localStorage.getItem('token');
+  
   return (
     <>
       <Container maxWidth="sm">
