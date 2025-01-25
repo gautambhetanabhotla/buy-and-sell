@@ -7,17 +7,18 @@ import process from 'process';
 import user_routes from './src/routes/user.js';
 import order_routes from './src/routes/order.js';
 import item_routes from './src/routes/item.js';
+import support_routes from './src/routes/support.js';
 
 // Load environment variables
 const envName = process.env.NODE_ENV;
 if (!['production', 'development'].includes(envName)) {
     throw new Error(`Invalid NODE_ENV: ${envName}`);
 }
-let env;
+let env = null;
 try {
     const file = fs.readFileSync('env.yaml', 'utf8');
     try {
-        env = yaml.load(file)[envName];
+        env = await yaml.load(file)[envName];
     } catch (err) {
         console.error('Error parsing env.yaml:', err);
         process.exit(1);
@@ -26,6 +27,28 @@ try {
     console.error('Error reading env.yaml:', err);
     process.exit(1);
 }
+
+// const initializeEnv = async (yamlpath) => {
+//     const envName = process.env.NODE_ENV;
+//     if (!['production', 'development'].includes(envName)) {
+//         throw new Error(`Invalid NODE_ENV: ${envName}`);
+//     }
+//     try {
+//         const file = fs.readFileSync(yamlpath, 'utf8');
+//         try {
+//             const env = yaml.load(file)[envName];
+//             return env;
+//         } catch (err) {
+//             console.error('Error parsing env.yaml:', err);
+//             process.exit(1);
+//         }
+//     } catch (err) {
+//         console.error('Error reading env.yaml:', err);
+//         process.exit(1);
+//     }
+// };
+
+// const env = await Env('./env.yaml');
 
 // Connect to database
 mongoose
@@ -43,6 +66,7 @@ App.use(express.static('public'));
 App.use('/api/user', user_routes);
 App.use('/api/item', item_routes);
 App.use('/api/order', order_routes);
+App.use('/api/support', support_routes);
 
 const staticRoutes = ['/', '/dashboard', '/deliver', '/orders', '/items', '/cart', '/support'];
 

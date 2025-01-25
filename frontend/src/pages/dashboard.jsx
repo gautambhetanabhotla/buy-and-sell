@@ -8,7 +8,7 @@ import Navbar from "../navbar.jsx";
 import Protected from "../auth.jsx";
 
 import { Typography, Grid2 as Grid, TextField, Button, Backdrop, CircularProgress } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+// import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const UserDetailsForm = ({decodedToken}) => {
 
@@ -102,7 +102,7 @@ const UserDetailsForm = ({decodedToken}) => {
 const Dashboard = ({ decodedToken }) => {
   return (
     <>
-      <Typography variant="h2">Welcome, {decodedToken.firstName}!</Typography>
+      <Typography variant="h2" pt={8}>Welcome, {decodedToken.firstName}!</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <UserDetailsForm decodedToken={decodedToken} />

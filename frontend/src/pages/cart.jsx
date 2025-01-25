@@ -3,7 +3,7 @@ import Navbar from "../navbar.jsx";
 
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Typography, Card, CardContent, CardActions, Grid2 as Grid, Button } from "@mui/material";
+import { Typography, Card, CardContent, CardActions, Grid2 as Grid, Button, Container } from "@mui/material";
 
 const Cart = ({ decodedToken }) => {
 
@@ -37,7 +37,8 @@ const Cart = ({ decodedToken }) => {
 
   return (
     <>
-      <Typography variant="h2">Cart</Typography>
+      {/* <Container top={10} pt={10} sx={{height: 50, top: 10}}/> */}
+      <Typography variant="h2" pt={8}>Cart</Typography>
       {cartItems.map((item) => (
         <Card key={item._id}>
           <Grid container>

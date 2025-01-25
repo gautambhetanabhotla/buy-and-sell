@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import env from '../../main.js';
 import { userModel, itemModel } from '../models.js';
 
+// const env = await Env('../../env.yaml');
+
 const router = express.Router();
 router.use(express.json());
 

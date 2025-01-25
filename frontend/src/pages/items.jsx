@@ -70,7 +70,7 @@ const Items = () => {
   }, []);
   return (
     <>
-      <Typography variant="h2">Browse items</Typography>
+      <Typography variant="h2" pt={8}>Browse items</Typography>
       <Grid container spacing={2} size={{ xs: 12, sm: 6 }}>
         {items.map((item) => (
           <Card key={item._id}>
