@@ -1,7 +1,7 @@
 import Protected from "../auth.jsx";
 import Navbar from "../navbar.jsx";
 
-import { Typography, TextField, Box, Paper } from "@mui/material";
+import { Typography, TextField, Box, Paper, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 
@@ -14,9 +14,9 @@ const Messages = ({ messages }) => {
   }, [messages]);
 
   return (
-    <Box sx={{ height: 'calc(100vh-150px)', overflowY: 'scroll', padding: '10px' }}>
+    <Box sx={{ height: 'calc(100vh-150px)', padding: '10px', paddingBottom: '100px' }}>
       {messages.map((message, index) => (
-        <Paper key={index} sx={{ padding: '10px', marginBottom: '10px' }}>
+        <Paper key={index} variant="outlined" sx={{ padding: '10px', marginBottom: '10px' }}>
           <Typography variant="h6">{message.sender}</Typography>
           <Typography variant="body2">{message.content}</Typography>
         </Paper>
@@ -27,6 +27,10 @@ const Messages = ({ messages }) => {
 }
 
 const Support = ({ decodedToken }) => {
+  
+  const colorTheme = useTheme();
+  console.dir(colorTheme);
+
   const [message, setMessage] = useState({
     sender: "You",
     content: ""
@@ -98,7 +102,7 @@ const Support = ({ decodedToken }) => {
           right: 0,
           zIndex: 1000,
           padding: '10px',
-          backgroundColor: 'white',
+          backgroundColor: '#111111',
         }}
       />
     </>

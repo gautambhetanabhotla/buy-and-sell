@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-import { Typography, Card, CardContent, CardActions, Grid2 as Grid, Button } from "@mui/material";
+import { Typography, Card, CardContent, CardActions, Grid2 as Grid, Button, Autocomplete, TextField } from "@mui/material";
 
 const Item = () => {
   const [item, setItem] = useState({});
@@ -60,6 +60,8 @@ const Item = () => {
 const Items = () => {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
   useEffect(() => {
     axios.get('/api/item/limit/100').then((response) => {
       console.dir(response.data);
@@ -71,20 +73,36 @@ const Items = () => {
   return (
     <>
       <Typography variant="h2" pt={8}>Browse items</Typography>
+      <Autocomplete
+        flat 
+        options={items.map((item) => item.name)}
+        renderInput={(params) => (
+          <TextField {...params} label="Search items" variant="outlined" />
+        )}
+        onInputChange={(e, v) => setSearchQuery(v)}
+        onChange={(e, v) => setSelectedValue(v)}
+        inputValue={searchQuery}
+        value={selectedValue}
+      />
       <Grid container spacing={2} size={{ xs: 12, sm: 6 }}>
-        {items.map((item) => (
+        {items.filter(
+          item => item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                  || item.description.toLowerCase().includes(searchQuery.toLowerCase())
+                  || item.category.some(category => category.toLowerCase().includes(searchQuery.toLowerCase()))
+          ).map((item) => (
           <Card key={item._id}>
             <CardContent>
               <Typography variant="h5">{item.name}</Typography>
               <Typography variant="body1">{item.description}</Typography>
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" pt={2}>
                 Categories: {item.category.map((category, idx) => 
                   category + (idx < item.category.length - 1 ? ', ' : ''))
                 }
               </Typography>
+              <Typography variant="subtitle2">Seller: {item.sellerDetails.firstName} {item.sellerDetails.lastName}</Typography>
             </CardContent>
             <CardActions>
-              <Typography variant="body1">₹{item.price}</Typography>
+            <Typography variant="body1">₹{item.price}</Typography>
               <Button onClick={() => navigate('/items?item=' + item._id)}>View</Button>
             </CardActions>
           </Card>
