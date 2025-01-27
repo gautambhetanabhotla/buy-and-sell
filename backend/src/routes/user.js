@@ -1,12 +1,10 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { jwtDecode } from 'jwt-decode';
 import bcrypt from 'bcrypt';
+import process from 'process';
 
-import env from '../../main.js';
 import { userModel, itemModel } from '../models.js';
-
-// const env = await Env('../../env.yaml');
+import validateAuth from '../auth.js';
 
 const router = express.Router();
 router.use(express.json());
@@ -30,7 +28,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/signup', (req, res) => {
-    bcrypt.hash(req.body.password, env.server.saltrounds, (err, hash) => {
+    bcrypt.hash(req.body.password, parseInt(process.env.SALTROUNDS), (err, hash) => {
         if(err) {
             res.status(500).json(err);
             return;
@@ -71,7 +69,7 @@ router.post('/login', (req, res) => {
                     lastName: user.lastName,
                     age: user.age,
                     contactNumber: user.contactNumber,
-                }, env.server.jwtsecret);
+                }, process.env.JWTSECRET);
                 res.status(200).json({token: token});
             }
             else {
@@ -84,47 +82,56 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.put('/:id', (req, res) => {
-    const user = userModel.findById(req.params.id);
-    user.exec().then((user) => {
-        if(req.body.password) {
-            bcrypt.hash(req.body.password, env.server.saltrounds, (err, hash) => {
-                if(err) {
-                    res.status(500).json(err);
-                    return;
-                }
-                user.passwordHash = hash;
-                // if(req.body.password) delete req.body.password;
-            });
+router.put('/:id', async (req, res) => {
+    try {
+        const user = await userModel.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
-        if(req.body.email) user.email = req.body.email;
-        if(req.body.firstName) user.firstName = req.body.firstName;
-        if(req.body.lastName) user.lastName = req.body.lastName;
-        if(req.body.age) user.age = req.body.age;
-        if(req.body.contactNumber) user.contactNumber = req.body.contactNumber;
-        user.save().then((user) => {
-            res.status(200).json(user);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
-    }).catch((err) => {
-        res.status(500).json(err);
-    });
+
+        if (req.body.password) {
+            try {
+                const hash = await bcrypt.hash(req.body.password, parseInt(process.env.SALTROUNDS));
+                user.passwordHash = hash;
+            } catch (err) {
+                return res.status(500).json(err);
+            }
+        }
+
+        if (req.body.email) user.email = req.body.email;
+        if (req.body.firstName) user.firstName = req.body.firstName;
+        if (req.body.lastName) user.lastName = req.body.lastName;
+        if (req.body.age) user.age = req.body.age;
+        if (req.body.contactNumber) user.contactNumber = req.body.contactNumber;
+
+        try {
+            const updatedUser = await user.save();
+            const token = jwt.sign({
+                id: updatedUser._id,
+                email: updatedUser.email,
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                age: updatedUser.age,
+                contactNumber: updatedUser.contactNumber,
+            }, process.env.JWTSECRET);
+
+            return res.status(200).json({ token });
+        } catch (err) {
+            return res.status(500).json(err);
+        }
+    } catch (err) {
+        return res.status(500).json(err);
+    }
 });
 
 router.get('/:id/cart', async (req, res) => {
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
     try {
-        const authHeader = req.headers.authorization;
-        if(!authHeader) {
-            res.status(401).send();
-            return;
-        }
-        try {
-            jwtDecode(authHeader.split(' ')[1]);
-        } catch (err) {
-            res.status(500).json(err);
-        }
-        const user = await userModel.findById(req.params.id).exec();
+        const user = await userModel.findById(userDetails.id).exec();
         const cartItems = await Promise.all(user.itemsInCart.map(async (itemID) => {
             const item = await itemModel.findById(itemID).exec();
             return item;

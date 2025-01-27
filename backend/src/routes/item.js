@@ -1,31 +1,9 @@
 import express from 'express';
-// import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
-import yaml from 'js-yaml';
 import process from 'process';
 
 import { itemModel, userModel } from '../models.js';
-import { jwtDecode } from 'jwt-decode';
-
-// Load environment variables
-const envName = process.env.NODE_ENV;
-if (!['production', 'development'].includes(envName)) {
-    throw new Error(`Invalid NODE_ENV: ${envName}`);
-}
-let env = null;
-try {
-    const file = fs.readFileSync('env.yaml', 'utf8');
-    try {
-        env = await yaml.load(file)[envName];
-    } catch (err) {
-        console.error('Error parsing env.yaml:', err);
-        process.exit(1);
-    }
-} catch (err) {
-    console.error('Error reading env.yaml:', err);
-    process.exit(1);
-}
+import validateAuth from '../auth.js';
 
 const router = express.Router();
 router.use(express.json());
@@ -39,7 +17,7 @@ router.get('/limit/:num', async (req, res) => {
     }
     try {
         console.log(authHeader.split(' ')[1]);
-        jwt.verify(authHeader.split(' ')[1], env.server.jwtsecret);
+        jwt.verify(authHeader.split(' ')[1], process.env.JWTSECRET);
     } catch {
         res.status(401).send();
         return;
@@ -91,12 +69,8 @@ router.post('/', (req, res) => {
 });
 
 router.post('/addtocart/:id', (req, res) => {
-    const authHeader = req.headers.authorization;
-    if(!authHeader) res.status(401).send();
-    const token = authHeader.split(' ')[1];
-    const decoded = jwtDecode(token);
-    console.dir(decoded);
-    const user = userModel.findById(decoded.id);
+    const userDetails = validateAuth(req);
+    const user = userModel.findById(userDetails.id);
     user.exec().then((user) => {
         if(!(user.itemsInCart.includes(req.params.id))) user.itemsInCart.push(req.params.id); // same item gettin gpushed twice
         user.save().then((user) => {

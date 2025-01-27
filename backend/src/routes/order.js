@@ -1,28 +1,9 @@
 import express from 'express';
 import process from 'process';
-import fs from 'fs';
-import yaml from 'js-yaml';
+import bcrypt from 'bcrypt';
 
-import { orderModel } from '../models.js';
-
-// Load environment variables
-const envName = process.env.NODE_ENV;
-if (!['production', 'development'].includes(envName)) {
-    throw new Error(`Invalid NODE_ENV: ${envName}`);
-}
-let env = null;
-try {
-    const file = fs.readFileSync('env.yaml', 'utf8');
-    try {
-        env = await yaml.load(file)[envName];
-    } catch (err) {
-        console.error('Error parsing env.yaml:', err);
-        process.exit(1);
-    }
-} catch (err) {
-    console.error('Error reading env.yaml:', err);
-    process.exit(1);
-}
+import { itemModel, orderModel, userModel } from '../models.js';
+import validateAuth from '../auth.js';
 
 const router = express.Router();
 router.use(express.json());
@@ -54,13 +35,70 @@ router.post('/', (req, res) => {
     });
 });
 
-router.post('/place', (req, res) => {
-    const order = new orderModel(req.body);
-    order.save().then((order) => {
-        res.status(200).json(order);
-    }).catch((err) => {
-        res.status(500).json(err);
+const orderAnItem = async (itemID, userID) => {
+    // Order an item for a user.
+    const OTP = Math.floor(100000 + Math.random() * 899999);
+    const OTPhash = await bcrypt.hash(OTP.toString(), parseInt(process.env.SALTROUNDS));
+    const order = new orderModel({
+        item: itemID,
+        buyer: userID,
+        otpHash: OTPhash,
+        status: 'pending'
     });
+    await order.save();
+
+    const item = await itemModel.findById(itemID);
+    if(item) {
+        item.isOrdered = true;
+        await item.save();
+    }
+    else {
+        throw new Error('Item not found');
+    }
+
+    const user = await userModel.findById(userID);
+    if(user) {
+        // console.dir(user.itemsInCart);
+        // console.dir(user.itemsInCart[0].buffer.toString());
+        user.itemsInCart.splice(user.itemsInCart.findIndex((id) => id.equals(itemID)), 1);
+        await user.save();
+    }
+    else {
+        throw new Error('User not found');
+    }
+};
+
+router.post('/place', async (req, res) => {
+    // Place an order for an array of items.
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+
+    const order = req.body;
+    
+    const results = await Promise.all(
+        order.map(async (item) => {
+            try {
+                await orderAnItem(item._id, userDetails.id);
+                return null; // No error for this item
+            } catch (error) {
+                return {
+                    item: item,
+                    error: error.message || error,
+                };
+            }
+        })
+    );
+
+    const invalidOrderItems = results.filter((result) => result !== null);
+
+    if(invalidOrderItems.length > 0) {
+        res.status(400).send(invalidOrderItems);
+    } else {
+        res.status(200).send();
+    }
 });
 
 export default router;

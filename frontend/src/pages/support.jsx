@@ -26,7 +26,7 @@ const Messages = ({ messages }) => {
   );
 }
 
-const Support = ({ decodedToken }) => {
+const Support = () => {
   
   const colorTheme = useTheme();
   console.dir(colorTheme);
@@ -34,10 +34,10 @@ const Support = ({ decodedToken }) => {
   const [message, setMessage] = useState({
     sender: "You",
     content: ""
-  });
+  }); // Message to be send to the backend
   const [messages, setMessages] = useState([]);
   const [sendable, setSendable] = useState(false);
-  const [responding, setResponding] = useState(false);
+  const [responding, setResponding] = useState(false); // Set to true if awaiting a response from the chatbot
   const [defaultContext, setDefaultContext] = useState("");
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const Support = ({ decodedToken }) => {
     }).catch((error) => {
       console.dir(error);
     });
-  }, []);
+  }, []); // Get starting context for the chat
 
   const sendMessage = () => {
     setMessages((prevMessages) => [...prevMessages, message]);

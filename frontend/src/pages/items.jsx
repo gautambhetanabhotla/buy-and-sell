@@ -74,7 +74,7 @@ const Items = () => {
     <>
       <Typography variant="h2" pt={8}>Browse items</Typography>
       <Autocomplete
-        flat 
+        variant="flat"
         options={items.map((item) => item.name)}
         renderInput={(params) => (
           <TextField {...params} label="Search items" variant="outlined" />
@@ -83,6 +83,7 @@ const Items = () => {
         onChange={(e, v) => setSelectedValue(v)}
         inputValue={searchQuery}
         value={selectedValue}
+        zindex={-10000}
       />
       <Grid container spacing={2} size={{ xs: 12, sm: 6 }}>
         {items.filter(

@@ -84,24 +84,25 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model('User', userSchema);
 
 const orderSchema = new mongoose.Schema({
+    item: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Item',
+        required: true,
+    },
     buyer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-    },
-    seller: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    amount: {
-        type: Number,
         required: true,
     },
     otpHash: {
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['pending', 'delivered', 'cancelled'],
+        default: 'pending',
+    }
 });
 
 const orderModel = mongoose.model('Order', orderSchema);

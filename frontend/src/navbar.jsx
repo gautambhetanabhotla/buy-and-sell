@@ -54,6 +54,7 @@ const Navbar = ({ctx}) => {
     sx={{
       width: '100%',
       position: 'fixed',
+      backgroundColor: '#111111',
     }}
     onChange={(event, newValue) => {
       setValue(newValue);
