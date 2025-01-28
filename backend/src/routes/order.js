@@ -1,6 +1,7 @@
 import express from 'express';
 import process from 'process';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
 import { itemModel, orderModel, userModel } from '../models.js';
 import validateAuth from '../auth.js';
@@ -8,8 +9,98 @@ import validateAuth from '../auth.js';
 const router = express.Router();
 router.use(express.json());
 
+router.get('/to-deliver/:num', async (req, res) => {
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    const orders = orderModel.aggregate([
+        { $limit: parseInt(req.params.num) },
+        {
+            $lookup: {
+                from: 'items',
+                localField: 'item',
+                foreignField: '_id',
+                as: 'item'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'buyer',
+                foreignField: '_id',
+                as: 'buyer'
+            }
+        },
+        { $unwind: '$item' },
+        { $unwind: '$buyer' },
+        {
+            $match: {
+                status: 'pending',
+                'item.seller': new mongoose.Types.ObjectId(userDetails.id),
+            }
+        },
+        {
+            $project: {
+                item: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    price: 1,
+                    category: 1
+                },
+                buyer: {
+                    _id: 1,
+                    firstName: 1,
+                },
+                status: 1
+            }
+        }
+    ]);
+    orders.exec().then((orders) => {
+        res.status(200).json(orders);
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
+});
+
 router.get('/limit/:num', (req, res) => {
-    const orders = orderModel.find().limit(req.params.num);
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    const orders = orderModel.aggregate([
+        {
+            $match: { 
+                buyer: new mongoose.Types.ObjectId(userDetails.id),
+                status: 'pending'
+            }
+        },
+        { $limit: parseInt(req.params.num) },
+        {
+            $lookup: {
+                from: 'items',
+                localField: 'item',
+                foreignField: '_id',
+                as: 'item'
+            }
+        },
+        { $unwind: '$item' },
+        {
+            $project: {
+                item: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    price: 1,
+                    category: 1
+                },
+                status: 1
+            }
+        }
+    ]);
     orders.exec().then((orders) => {
         res.status(200).json(orders);
     }).catch((err) => {
@@ -100,5 +191,45 @@ router.post('/place', async (req, res) => {
         res.status(200).send();
     }
 });
+
+router.post('/cancel/:id', async (req, res) => {
+    // TO DO: Doesn't work
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    const order = await orderModel.findById(req.params.id);
+    if(order.buyer.equals(userDetails.id)) {
+        order.status = 'cancelled';
+        const item = await itemModel.findById(order.item);
+        item.isOrdered = false;
+        await item.save();
+        await order.save();
+        res.status(200).send();
+    } else {
+        res.status(403).send();
+    }
+});
+
+router.get('/:id/regenerate', (req, res) => {
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    // TO DO: Make this more secure. Not checking buyer validity.
+    const order = orderModel.findById(req.params.id);
+    order.exec().then(async (order) => {
+        const OTP = Math.floor(100000 + Math.random() * 899999);
+        order.otpHash = await bcrypt.hash(OTP.toString(), parseInt(process.env.SALTROUNDS));
+        await order.save();
+        res.status(200).json({ otp: OTP });
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
+});
+
+router.post('/:id/complete')
 
 export default router;

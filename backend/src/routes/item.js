@@ -25,6 +25,7 @@ router.get('/limit/:num', async (req, res) => {
 
     const items = await itemModel.aggregate([
         { $limit: parseInt(req.params.num) },
+        { $match: { isOrdered: false } },
         {
             $lookup: {
                 from: 'users', // The name of the collection to join
@@ -72,12 +73,15 @@ router.post('/addtocart/:id', (req, res) => {
     const userDetails = validateAuth(req);
     const user = userModel.findById(userDetails.id);
     user.exec().then((user) => {
-        if(!(user.itemsInCart.includes(req.params.id))) user.itemsInCart.push(req.params.id); // same item gettin gpushed twice
-        user.save().then((user) => {
-            res.status(200).json(user);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
+        const item = itemModel.findById(req.params.id);
+        item.exec().then((item) => {
+            if(!(user.itemsInCart.includes(req.params.id)) && item.seller !== user.id) user.itemsInCart.push(req.params.id); // same item gettin gpushed twice
+            user.save().then((user) => {
+                res.status(200).json(user);
+            }).catch((err) => {
+                res.status(500).json(err);
+            });
+        }); 
     }).catch((err) => {
         res.status(500).json(err);
     });

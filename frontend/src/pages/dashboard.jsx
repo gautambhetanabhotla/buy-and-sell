@@ -173,7 +173,7 @@ const ItemUploadForm = ({decodedToken}) => {
             label="Add a category"
           />
           <Button
-            variant="contained"
+            // variant="contained"
             onClick={() => {
               if (category === "") return;
               setCategories([...categories, category]);
@@ -181,7 +181,7 @@ const ItemUploadForm = ({decodedToken}) => {
             }}
           ><AddIcon /></Button>
           <Button
-            variant="contained"
+            // variant="contained"
             onClick={() => {
               setCategories([]);
               setCategory("");
