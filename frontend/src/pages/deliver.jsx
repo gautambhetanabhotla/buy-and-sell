@@ -14,7 +14,8 @@ import {
   Grid2 as Grid,
   Box,
   Button,
-  TextField } from "@mui/material";
+  TextField,
+  Alert } from "@mui/material";
 
 const eventEmitter = new EventEmitter();
 
@@ -24,6 +25,7 @@ const OrderCard = ({ order }) => {
 
   const [OTP, setOTP] = useState("");
   const [completeButtonLoading, setCompleteButtonLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const completeOrder = () => {
     setCompleteButtonLoading(true);
@@ -31,14 +33,18 @@ const OrderCard = ({ order }) => {
       // id: order._id,
       otp: OTP,
     }).then(res => {
+      console.log('STATUSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSs: ');
+      console.dir(res);
       setCompleteButtonLoading(false);
       if(res.status === 200) {
         eventEmitter.emit('order-completed', {
           id: order._id,
         });
       }
-    }).catch(err => {
-      console.error(err);
+    }).catch(res => {
+      if(res.status === 403) {
+        setErrorMsg("Invalid OTP.");
+      }
       setCompleteButtonLoading(false);
     });
   };
@@ -70,6 +76,7 @@ const OrderCard = ({ order }) => {
                 value={OTP}
                 onChange={(e) => setOTP(e.target.value)}
               />
+              {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
             </CardContent>
             <CardActions>
               <Button {...completeButtonProps}><Typography>Complete order</Typography></Button>
@@ -86,7 +93,7 @@ const Deliver = () => {
   const [orders, setOrders] = useState([]);
   useEffect(() => {
     axios.get('/api/order/to-deliver/100').then(res => {
-      console.dir(res);
+      // console.dir(res);
       setOrders(res.data);
     }).catch(err => {
       console.error(err);

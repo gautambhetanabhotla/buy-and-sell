@@ -49,7 +49,7 @@ const OrderCard = ({ order }) => {
 
   return (
     <>
-      <Card>
+      <Card mt={4} mb={4}>
         <Grid container justifyContent={"space-between"}>
           <Grid item xs={12} sm={6} md={6} lg={6}>
             <CardContent>

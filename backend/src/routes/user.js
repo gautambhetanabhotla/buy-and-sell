@@ -143,6 +143,7 @@ router.get('/:id/cart', async (req, res) => {
 });
 
 router.delete('/:id/cart/:itemID', async (req, res) => {
+    console.log("DELETE FROM CART REQUEST");
     try {
         const user = await userModel.findById(req.params.id).exec();
         user.itemsInCart.splice(user.itemsInCart.indexOf(req.params.itemID), 1);

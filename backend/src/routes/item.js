@@ -70,12 +70,17 @@ router.post('/', (req, res) => {
 });
 
 router.post('/addtocart/:id', (req, res) => {
+    console.log('ADD TO CART REQUEST');
     const userDetails = validateAuth(req);
     const user = userModel.findById(userDetails.id);
     user.exec().then((user) => {
         const item = itemModel.findById(req.params.id);
         item.exec().then((item) => {
-            if(!(user.itemsInCart.includes(req.params.id)) && item.seller !== user.id) user.itemsInCart.push(req.params.id); // same item gettin gpushed twice
+            console.log('SELLER ID: ' + item.seller + ', BUYER ID: ' + user.id);
+            if(!user.itemsInCart.includes(req.params.id)
+                && !item.seller.equals(user.id)
+                && !item.isOrdered)
+                    user.itemsInCart.push(req.params.id); // same item gettin gpushed twice, and make sure ordered items dont get pushed onto cart
             user.save().then((user) => {
                 res.status(200).json(user);
             }).catch((err) => {
