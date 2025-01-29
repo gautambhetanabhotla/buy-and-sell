@@ -230,6 +230,29 @@ router.get('/:id/regenerate', (req, res) => {
     });
 });
 
-router.post('/:id/complete')
+router.post('/:id/complete', (req, res) => {
+    console.log('RECEIVED COMPLETE REQUEST');
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    const order = orderModel.findById(req.params.id);
+    bcrypt.compare(req.body.otp, order.otpHash).then((result) => {
+        if(result) {
+            order.exec().then(async (order) => {
+                order.status = 'completed';
+                await order.save();
+                res.status(200).send();
+            }).catch((err) => {
+                res.status(500).json(err);
+            });
+        } else {
+            res.status(403).send();
+        }
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
+});
 
 export default router;

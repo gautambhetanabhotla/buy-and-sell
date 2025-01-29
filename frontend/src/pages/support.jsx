@@ -1,9 +1,10 @@
 import Protected from "../auth.jsx";
 import Navbar from "../navbar.jsx";
 
-import { Typography, TextField, Box, Paper, useTheme } from "@mui/material";
+import { Typography, TextField, Box, Paper } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import axios from 'axios';
+import Markdown from 'marked-react';
 
 const Messages = ({ messages }) => {
   const messagesEndRef = useRef(null);
@@ -18,7 +19,7 @@ const Messages = ({ messages }) => {
       {messages.map((message, index) => (
         <Paper key={index} variant="outlined" sx={{ padding: '10px', marginBottom: '10px' }}>
           <Typography variant="h6">{message.sender}</Typography>
-          <Typography variant="body2">{message.content}</Typography>
+          <Markdown>{message.content}</Markdown>
         </Paper>
       ))}
       <div ref={messagesEndRef} />
@@ -27,9 +28,6 @@ const Messages = ({ messages }) => {
 }
 
 const Support = () => {
-  
-  const colorTheme = useTheme();
-  console.dir(colorTheme);
 
   const [message, setMessage] = useState({
     sender: "You",

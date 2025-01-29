@@ -4,7 +4,7 @@ import Navbar from "../navbar.jsx";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import EventEmitter from "event-emitter";
+import EventEmitter from "eventemitter3";
 
 import {
   Typography,
@@ -16,6 +16,8 @@ import {
   Button,
   TextField } from "@mui/material";
 
+const eventEmitter = new EventEmitter();
+
 const OrderCard = ({ order }) => {
 
   const navigate = useNavigate();
@@ -25,10 +27,16 @@ const OrderCard = ({ order }) => {
 
   const completeOrder = () => {
     setCompleteButtonLoading(true);
-    axios.get('/api/order/' + order._id + '/regenerate').then(res => {
-      // console.log(res.data.otp);
-      setOTP(res.data.otp);
+    axios.post('/api/order/' + order._id + '/complete', {
+      // id: order._id,
+      otp: OTP,
+    }).then(res => {
       setCompleteButtonLoading(false);
+      if(res.status === 200) {
+        eventEmitter.emit('order-completed', {
+          id: order._id,
+        });
+      }
     }).catch(err => {
       console.error(err);
       setCompleteButtonLoading(false);
@@ -73,7 +81,7 @@ const OrderCard = ({ order }) => {
   );
 };
 
-const Deliver = ({ decodedToken }) => {
+const Deliver = () => {
 
   const [orders, setOrders] = useState([]);
   useEffect(() => {
@@ -84,6 +92,10 @@ const Deliver = ({ decodedToken }) => {
       console.error(err);
     });
   }, []);
+
+  eventEmitter.on('order-completed', ({ id }) => {
+    setOrders(orders.filter(order => order._id !== id));
+  });
 
   return (
     <>

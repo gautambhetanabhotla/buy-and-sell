@@ -34,13 +34,13 @@ const OrderCard = ({ order }) => {
     });
   };
 
-  const cancelOrder = () => {
-    axios.post('/api/order/cancel' + order._id).then(res => {
-      console.log(res);
-    }).catch(err => {
-      console.error(err);
-    });
-  }
+  // const cancelOrder = () => {
+  //   axios.post('/api/order/cancel' + order._id).then(res => {
+  //     console.log(res);
+  //   }).catch(err => {
+  //     console.error(err);
+  //   });
+  // }
 
   const regenerateButtonProps = {
     onClick: regenerateOTP,
@@ -82,7 +82,7 @@ const OrderCard = ({ order }) => {
   );
 };
 
-const Orders = ({ decodedToken }) => {
+const Orders = () => {
 
   const [orders, setOrders] = useState([]);
   useEffect(() => {
