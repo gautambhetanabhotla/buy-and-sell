@@ -6,6 +6,7 @@ import process from 'process';
 import dotenv from 'dotenv';
 
 import { itemModel } from '../models.js';
+import validateAuth from '../auth.js';
 
 dotenv.config({
     path: process.env.NODE_ENV === 'development' ? './.env-dev' : './.env'
@@ -23,7 +24,13 @@ router.post('/prompt', async (req, res) => {
 });
 
 router.get('/defaultcontext', async (req, res) => {
-    let defaultContext = "You are a customer support chatbot for a buy and sell website.\nThe items currently for sale are:\n";
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    console.dir(userDetails);
+    let defaultContext = `Hi, my name is ${userDetails.firstName} ${userDetails.lastName}. You are a customer support chatbot for a buy and sell website.\nThe items currently for sale are:\n`;
     const items = await itemModel.find({ isOrdered: false }).limit(req.params.num);
     items.forEach((item) => {
         defaultContext += `${item.name}, price: ${item.price}, description: "${item.description}", categories: ${item.category}\n`;

@@ -5,9 +5,19 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-import { Typography, Card, CardContent, CardActions, Grid2 as Grid, Button, Autocomplete, TextField } from "@mui/material";
+import { Typography,
+         Card,
+         CardContent,
+         CardActions,
+         Grid2 as Grid,
+         Button,
+         Autocomplete,
+         TextField,
+         FormControl,
+         Select,
+         MenuItem } from "@mui/material";
 
-const Item = () => {
+const Item = ({ decodedToken }) => {
   const [item, setItem] = useState({});
   const [categories, setCategories] = useState([]);
   const location = useLocation();
@@ -49,7 +59,7 @@ const Item = () => {
           <Typography variant="h5" mt={5}>₹{item.price}</Typography>
         </CardContent>
         <CardActions>
-          <Button onClick={addToCart}>Add to Cart</Button>
+          {(decodedToken.id != item.seller) && <Button onClick={addToCart}>Add to Cart</Button>}
         </CardActions>
       </Card>
     </div>
@@ -61,7 +71,8 @@ const Items = () => {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedItemName, setSelectedItemName] = useState('');
+
   useEffect(() => {
     axios.get('/api/item/limit/100').then((response) => {
       console.dir(response.data);
@@ -69,7 +80,8 @@ const Items = () => {
     }).catch((error) => {
       console.log(error);
     });
-  }, []);
+  }, []); // Fetch all items for sale on page load
+
   return (
     <>
       <Typography variant="h2" pt={8}>Browse items</Typography>
@@ -80,10 +92,9 @@ const Items = () => {
           <TextField {...params} label="Search items" variant="outlined" />
         )}
         onInputChange={(e, v) => setSearchQuery(v)}
-        onChange={(e, v) => setSelectedValue(v)}
+        onChange={(e, v) => setSelectedItemName(v)}
         inputValue={searchQuery}
-        value={selectedValue}
-        zindex={-10000}
+        value={selectedItemName}
       />
       <Grid container spacing={2} size={{ xs: 12, sm: 6 }}>
         {items.filter(
@@ -113,13 +124,13 @@ const Items = () => {
   );
 }
 
-const ItemsPage = () => {
+const ItemsPage = ({ decodedToken }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   return (
     <Protected>
       <Navbar />
-      {queryParams.get('item') ? <Item /> : <Items />}
+      {queryParams.get('item') ? <Item decodedToken={decodedToken}/> : <Items />}
     </Protected>
   );
 };

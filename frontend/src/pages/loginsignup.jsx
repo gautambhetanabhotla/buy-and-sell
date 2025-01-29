@@ -94,6 +94,7 @@ const SignupForm = () => {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
   const handleSignup = (event) => {
     event.preventDefault();
     setLoading(true);
@@ -124,6 +125,7 @@ const SignupForm = () => {
       console.error(error);
     });
   };
+  
   return (
     <>
       <Backdrop

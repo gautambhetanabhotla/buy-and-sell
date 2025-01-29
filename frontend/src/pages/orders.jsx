@@ -2,7 +2,7 @@ import Protected from "../auth.jsx";
 import Navbar from "../navbar.jsx";
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import {
@@ -13,7 +13,8 @@ import {
   Grid2 as Grid,
   Box,
   Button,
-  TextField } from "@mui/material";
+  TextField,
+  ButtonGroup } from "@mui/material";
 
 const OrderCard = ({ order }) => {
 
@@ -62,6 +63,7 @@ const OrderCard = ({ order }) => {
               {/* <Button><Typography>Cancel order</Typography></Button> */}
             </CardActions>
           </Grid>
+          { order.status === "pending" &&
           <Grid item>
             <CardContent>
               <Typography variant="h4" pb={2}>OTP</Typography>
@@ -76,17 +78,18 @@ const OrderCard = ({ order }) => {
               <Button {...regenerateButtonProps}><Typography>Regenerate</Typography></Button>
             </CardActions>
           </Grid>
+        }
         </Grid>
       </Card>
     </>
   );
 };
 
-const Orders = () => {
+const PendingOrders = () => {
 
   const [orders, setOrders] = useState([]);
   useEffect(() => {
-    axios.get('/api/order/limit/100').then(res => {
+    axios.get('/api/order/pending/100').then(res => {
       setOrders(res.data);
     }).catch(err => {
       console.error(err);
@@ -95,7 +98,51 @@ const Orders = () => {
 
   return (
     <>
-      <Typography variant="h2" pt={8} pl={4}>Orders</Typography>
+      <Typography variant="h2" pt={4} pl={4}>Pending Orders</Typography>
+      <Box padding={'5vw'}>
+        {orders.map(order => (
+          <OrderCard key={order._id} order={order} />
+        ))}
+      </Box>
+    </>
+  );
+}
+
+const ReceivedOrders = () => {
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    axios.get('/api/order/received/100').then(res => {
+      setOrders(res.data);
+    }).catch(err => {
+      console.error(err);
+    });
+  }, []);
+
+  return (
+    <>
+      <Typography variant="h2" pt={4} pl={4}>Received Orders</Typography>
+      <Box padding={'5vw'}>
+        {orders.map(order => (
+          <OrderCard key={order._id} order={order} />
+        ))}
+      </Box>
+    </>
+  );
+}
+
+const DeliveredOrders = () => {
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    axios.get('/api/order/delivered/100').then(res => {
+      setOrders(res.data);
+    }).catch(err => {
+      console.error(err);
+    });
+  }, []);
+
+  return (
+    <>
+      <Typography variant="h2" pt={4} pl={4}>Delivered Orders</Typography>
       <Box padding={'5vw'}>
         {orders.map(order => (
           <OrderCard key={order._id} order={order} />
@@ -106,10 +153,36 @@ const Orders = () => {
 }
 
 const OrdersPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const string = queryParams.get('orders');
   return (
     <Protected>
       <Navbar />
-      <Orders />
+      <Box pt={9} justifyContent={"center"} alignItems={"center"} display={"flex"}>
+        <ButtonGroup row>
+          <Button
+            variant={!string ? "contained" : (string === "pending" ? "contained" : "outlined")}
+            onClick={() => navigate('/orders?orders=pending')}
+          >
+            Pending
+          </Button>
+          <Button
+            variant={!string ? "outlined" : string === "received" ? "contained" : "outlined"}
+            onClick={() => navigate('/orders?orders=received')}
+          >
+            Received
+          </Button>
+          <Button 
+            variant={!string ? "outlined" : string === "delivered" ? "contained" : "outlined"}
+            onClick={() => navigate('/orders?orders=delivered')}
+          >
+            Delivered
+          </Button>
+        </ButtonGroup>
+      </Box>
+      {string ? (string === "received" ? <ReceivedOrders /> : (string === "delivered") ? <DeliveredOrders /> : <PendingOrders />)  : <PendingOrders />}
     </Protected>
   );
 };

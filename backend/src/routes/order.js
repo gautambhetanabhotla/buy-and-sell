@@ -65,7 +65,7 @@ router.get('/to-deliver/:num', async (req, res) => {
     });
 });
 
-router.get('/limit/:num', (req, res) => {
+router.get('/pending/:num', (req, res) => {
     const userDetails = validateAuth(req);
     if(!userDetails) {
         res.status(401).send();
@@ -246,6 +246,134 @@ router.post('/:id/complete', async (req, res) => {
     } else {
         res.status(403).send();
     }
+});
+
+router.get('/delivered/:num', (req, res) => {
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    const orders = orderModel.aggregate([
+        { $limit: parseInt(req.params.num) },
+        {
+            $lookup: {
+                from: 'items',
+                localField: 'item',
+                foreignField: '_id',
+                as: 'item'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'buyer',
+                foreignField: '_id',
+                as: 'buyer'
+            }
+        },
+        { $unwind: '$item' },
+        { $unwind: '$buyer' },
+        {
+            $match: {
+                status: 'delivered',
+                'item.seller': new mongoose.Types.ObjectId(userDetails.id),
+            }
+        },
+        {
+            $project: {
+                item: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    price: 1,
+                    category: 1
+                },
+                buyer: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                },
+                status: 1
+            }
+        }
+    ]);
+    orders.exec().then((orders) => {
+        res.status(200).json(orders);
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
+});
+
+router.get('/received/:num', (req, res) => {
+    const userDetails = validateAuth(req);
+    if(!userDetails) {
+        res.status(401).send();
+        return;
+    }
+    const orders = orderModel.aggregate([
+        { $limit: parseInt(req.params.num) },
+        {
+            $lookup: {
+                from: 'items',
+                localField: 'item',
+                foreignField: '_id',
+                as: 'item'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'buyer',
+                foreignField: '_id',
+                as: 'buyer'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'item.seller',
+                foreignField: '_id',
+                as: 'itemseller'
+            }
+        },
+        { $unwind: '$item' },
+        { $unwind: '$buyer' },
+        { $unwind: '$itemseller' },
+        {
+            $match: {
+                status: 'delivered',
+                'buyer._id': new mongoose.Types.ObjectId(userDetails.id),
+            }
+        },
+        {
+            $project: {
+                item: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    price: 1,
+                    category: 1
+                },
+                buyer: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                },
+                itemseller: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                },
+                status: 1,
+            }
+        }
+    ]);
+    orders.exec().then((orders) => {
+        res.status(200).json(orders);
+    }).catch((err) => {
+        res.status(500).json(err);
+    });
 });
 
 export default router;

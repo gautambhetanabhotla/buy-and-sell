@@ -45,6 +45,9 @@ const OrderCard = ({ order }) => {
       if(res.status === 403) {
         setErrorMsg("Invalid OTP.");
       }
+      else {
+        setErrorMsg("An error occurred. Please try again later.");
+      }
       setCompleteButtonLoading(false);
     });
   };
