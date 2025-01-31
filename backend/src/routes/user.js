@@ -98,11 +98,17 @@ router.put('/:id', async (req, res) => {
             }
         }
 
-        if (req.body.email) user.email = req.body.email;
-        if (req.body.firstName) user.firstName = req.body.firstName;
-        if (req.body.lastName) user.lastName = req.body.lastName;
-        if (req.body.age) user.age = req.body.age;
-        if (req.body.contactNumber) user.contactNumber = req.body.contactNumber;
+        // if (req.body.email) user.email = req.body.email;
+        // if (req.body.firstName) user.firstName = req.body.firstName;
+        // if (req.body.lastName) user.lastName = req.body.lastName;
+        // if (req.body.age) user.age = req.body.age;
+        // if (req.body.contactNumber) user.contactNumber = req.body.contactNumber;
+
+        user.email = req.body.email;
+        user.firstName = req.body.firstName;
+        user.lastName = req.body.lastName;
+        user.age = req.body.age;
+        user.contactNumber = req.body.contactNumber;
 
         try {
             const updatedUser = await user.save();

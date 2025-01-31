@@ -96,7 +96,6 @@ const Deliver = () => {
   const [orders, setOrders] = useState([]);
   useEffect(() => {
     axios.get('/api/order/to-deliver/100').then(res => {
-      // console.dir(res);
       setOrders(res.data);
     }).catch(err => {
       console.error(err);

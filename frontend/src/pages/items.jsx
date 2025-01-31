@@ -13,7 +13,6 @@ import { Typography,
          Button,
          Autocomplete,
          TextField,
-         FormControl,
          Select,
          MenuItem,
          OutlinedInput,
@@ -100,20 +99,21 @@ const Items = () => {
     <>
       <Typography variant="h2" pt={8}>Browse items</Typography>
       <Grid container>
-        <Grid item xs={6} sm={6} md={6} lg={6}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
           <Autocomplete
             variant="flat"
             options={items.map((item) => item.name)}
             renderInput={(params) => (
-              <TextField {...params} label="Search items" variant="outlined" />
+              <TextField {...params} label="Search items" variant="outlined" fullWidth />
             )}
             onInputChange={(e, v) => setSearchQuery(v)}
             onChange={(e, v) => setSelectedItemName(v)}
             inputValue={searchQuery}
             value={selectedItemName}
+            fullWidth
           />
         </Grid>
-        <Grid item xs={6} sm={6} md={6} lg={6}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
           <Select
             labelId="demo-multiple-chip-label"
             id="demo-multiple-chip"
@@ -145,7 +145,7 @@ const Items = () => {
           item => (item.name.toLowerCase().includes(searchQuery.toLowerCase())
                   || item.description.toLowerCase().includes(searchQuery.toLowerCase()))
                   &&
-                  (selectedCategories.length === 0 || selectedCategories.every(category => item.category.includes(category)))
+                  (selectedCategories.length === 0 || selectedCategories.some(category => item.category.includes(category)))
           ).map((item) => (
           <Card key={item._id}>
             <CardContent>

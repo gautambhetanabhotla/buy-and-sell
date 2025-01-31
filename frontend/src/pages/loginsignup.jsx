@@ -8,7 +8,6 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 
-// // import User from '../user.tsx';
 import { AuthContext } from "../auth.jsx";
 
 const LoginForm = () => {
