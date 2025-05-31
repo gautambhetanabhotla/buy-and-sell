@@ -3,7 +3,7 @@
  * This file demonstrates a simple GET endpoint that returns a JSON response
  */
 
-export async function GET(request: Request) {
+export async function GET() {
   // You can access query parameters, headers, and other request properties from the request object
   // For example: const { searchParams } = new URL(request.url)
 
