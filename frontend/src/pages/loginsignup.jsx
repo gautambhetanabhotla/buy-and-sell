@@ -196,7 +196,8 @@ const LoginSignupPage = () => {
   return (
     <>
       <Container maxWidth="sm">
-        <Box sx={{ mt: 4 }}>
+        {/* <Box sx={{ mt: 4 }}> */}
+          <Box sx={{pt: 12}}/>
           <Typography variant="h4" component="h1" gutterBottom fontStyle={{ fontWeight: "bold" }}>
           {isLogin ? "Log in" : "Sign up"}
           </Typography>
@@ -213,7 +214,7 @@ const LoginSignupPage = () => {
             }}>
             {isLogin ? "Don't have an account yet? Sign up" : "Have an account already? Log in"}
           </Typography>
-        </Box>
+        {/* </Box> */}
       </Container>
     </>
   );

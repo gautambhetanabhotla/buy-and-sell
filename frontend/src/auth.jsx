@@ -24,7 +24,7 @@ const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     delete axios.defaults.headers.common["Authorization"];
-    localStorage.removeItem('token');
+    localStorage.removeItem('buy-sell-auth-token');
   }
 
   return (
