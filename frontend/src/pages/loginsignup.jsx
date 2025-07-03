@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -13,14 +12,13 @@ import { AuthContext } from "../auth.jsx";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
+  const ctx = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const handleLogin = (event) => {
     event.preventDefault();
-    // console.log(email, password);
     setLoading(true);
     axios.post('/api/user/login', {
       email: email,
@@ -29,8 +27,7 @@ const LoginForm = () => {
     .then(response => {
       if(response.status === 200) {
         const Token = response.data.token;
-        console.log('Token:', Token);
-        login(Token);
+        ctx.login(Token);
         setLoading(false);
         setIsError(false);
         navigate('/dashboard');
@@ -191,19 +188,10 @@ const LoginSignupPage = () => {
   const [isLogin, setIsLogin] = useState(queryParams.get('mode') !== 'signup');
   const ctx = useContext(AuthContext);
   const navigate = useNavigate();
+
   useEffect(() => {
-    const tk = localStorage.getItem('token');
-    try {
-      const decoded = jwtDecode(tk);
-      console.log(decoded);
-      ctx.login(tk);
-      navigate('/dashboard');
-    } catch (err) {
-      console.log(err);
-      ctx.logout();
-    }
-  }, [ctx, navigate]);
-  // const tk = localStorage.getItem('token');
+    if (ctx.user) navigate('/dashboard');
+  }, [ctx.user, navigate]);
   
   return (
     <>

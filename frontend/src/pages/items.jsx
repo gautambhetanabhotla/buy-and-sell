@@ -1,7 +1,7 @@
-import Protected from "../auth.jsx";
+import Protected, {AuthContext} from "../auth.jsx";
 import Navbar from "../navbar.jsx";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -17,12 +17,15 @@ import { Typography,
          MenuItem,
          OutlinedInput,
          Box,
-         Chip } from "@mui/material";
+         Chip,
+         Container } from "@mui/material";
 
-const Item = ({ decodedToken }) => {
+const Item = () => {
   const [item, setItem] = useState({});
   const [categories, setCategories] = useState([]);
   const location = useLocation();
+
+  const ctx = useContext(AuthContext);
   
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -61,7 +64,7 @@ const Item = ({ decodedToken }) => {
           <Typography variant="h5" mt={5}>₹{item.price}</Typography>
         </CardContent>
         <CardActions>
-          {(decodedToken.id != item.seller) && <Button onClick={addToCart}>Add to Cart</Button>}
+          {(ctx.user.id != item.seller) && <Button onClick={addToCart}>Add to Cart</Button>}
         </CardActions>
       </Card>
     </div>
@@ -97,74 +100,79 @@ const Items = () => {
 
   return (
     <>
-      <Typography variant="h2" pt={8}>Browse items</Typography>
-      <Grid container>
-        <Grid item xs={12} sm={12} md={6} lg={6}>
-          <Autocomplete
-            variant="flat"
-            options={items.map((item) => item.name)}
-            renderInput={(params) => (
-              <TextField {...params} label="Search items" variant="outlined" fullWidth />
-            )}
-            onInputChange={(e, v) => setSearchQuery(v)}
-            onChange={(e, v) => setSelectedItemName(v)}
-            inputValue={searchQuery}
-            value={selectedItemName}
-            fullWidth
-          />
+      <Typography variant="h2" pt={8} pl={3}>Browse items</Typography>
+      <Container>
+        <Grid container spacing={2}>
+          <Grid item sm={12} md={6} lg={6} xl={6} minWidth={400}>
+            <Autocomplete
+              variant="flat"
+              options={items.map((item) => item.name)}
+              renderInput={(params) => (
+                <TextField {...params} label="Search items" variant="outlined" fullWidth />
+              )}
+              onInputChange={(e, v) => setSearchQuery(v)}
+              onChange={(e, v) => setSelectedItemName(v)}
+              inputValue={searchQuery}
+              value={selectedItemName}
+              fullWidth
+            />
+          </Grid>
+          <Grid item sm={12} md={6} lg={6} xl={6} minWidth={400}>
+            <Select
+              label="Categories"
+              minWidth={200}
+              multiple
+              value={selectedCategories}
+              onChange={handleSelectedCategoryChange}
+              input={<OutlinedInput label="Chip" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </Box>
+              )}
+            >
+              {availableCategories.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                >
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={6}>
-          <Select
-            labelId="demo-multiple-chip-label"
-            id="demo-multiple-chip"
-            multiple
-            value={selectedCategories}
-            onChange={handleSelectedCategoryChange}
-            input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
-          >
-            {availableCategories.map((name) => (
-              <MenuItem
-                key={name}
-                value={name}
-              >
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
+      </Container>
+      <Container>
+        <Grid container spacing={2} mt={5} size={{ xs: 12, sm: 6 }}>
+          {items.filter(
+            item => (item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    || item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                    &&
+                    (selectedCategories.length === 0 || selectedCategories.some(category => item.category.includes(category)))
+            ).map((item) => (
+            <Card key={item._id}>
+              <CardContent>
+                <Typography variant="h5">{item.name}</Typography>
+                <Typography variant="body1">{item.description}</Typography>
+                <Typography variant="subtitle2" pt={2}>
+                  Categories: {item.category.map((category, idx) => 
+                    category + (idx < item.category.length - 1 ? ', ' : ''))
+                  }
+                </Typography>
+                <Typography variant="subtitle2">Seller: {item.sellerDetails.firstName} {item.sellerDetails.lastName}</Typography>
+              </CardContent>
+              <CardActions>
+              <Typography variant="body1">₹{item.price}</Typography>
+                <Button onClick={() => navigate('/items?item=' + item._id)}>View</Button>
+              </CardActions>
+            </Card>
+          ))}
         </Grid>
-      </Grid>
-      <Grid container spacing={2} size={{ xs: 12, sm: 6 }}>
-        {items.filter(
-          item => (item.name.toLowerCase().includes(searchQuery.toLowerCase())
-                  || item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                  &&
-                  (selectedCategories.length === 0 || selectedCategories.some(category => item.category.includes(category)))
-          ).map((item) => (
-          <Card key={item._id}>
-            <CardContent>
-              <Typography variant="h5">{item.name}</Typography>
-              <Typography variant="body1">{item.description}</Typography>
-              <Typography variant="subtitle2" pt={2}>
-                Categories: {item.category.map((category, idx) => 
-                  category + (idx < item.category.length - 1 ? ', ' : ''))
-                }
-              </Typography>
-              <Typography variant="subtitle2">Seller: {item.sellerDetails.firstName} {item.sellerDetails.lastName}</Typography>
-            </CardContent>
-            <CardActions>
-            <Typography variant="body1">₹{item.price}</Typography>
-              <Button onClick={() => navigate('/items?item=' + item._id)}>View</Button>
-            </CardActions>
-          </Card>
-        ))}
-      </Grid>
+      </Container>
+      
     </>
   );
 }

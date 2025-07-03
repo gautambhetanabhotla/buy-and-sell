@@ -20,15 +20,15 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 // import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const UserDetailsForm = ({decodedToken}) => {
+const UserDetailsForm = () => {
 
   const ctx = useContext(AuthContext);
 
-  const [firstName, setFirstName] = useState(decodedToken.firstName || "");
-  const [lastName, setLastName] = useState(decodedToken.lastName || "");
-  const [email, setEmail] = useState(decodedToken.email || "");
-  const [age, setAge] = useState(decodedToken.age || "");
-  const [contactNumber, setContactNumber] = useState(decodedToken.contactNumber || "");
+  const [firstName, setFirstName] = useState(ctx.user.firstName || "");
+  const [lastName, setLastName] = useState(ctx.user.lastName || "");
+  const [email, setEmail] = useState(ctx.user.email || "");
+  const [age, setAge] = useState(ctx.user.age || "");
+  const [contactNumber, setContactNumber] = useState(ctx.user.contactNumber || "");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ const UserDetailsForm = ({decodedToken}) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     setLoading(true);
-    axios.put('/api/user/' + decodedToken.id, {
+    axios.put('/api/user/' + ctx.user.id, {
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -112,12 +112,14 @@ const UserDetailsForm = ({decodedToken}) => {
   );
 };
 
-const ItemUploadForm = ({decodedToken}) => {
+const ItemUploadForm = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
+
+  const { user } = useContext(AuthContext);
 
   const uploadItem = () => {
     axios.post('/api/item', {
@@ -125,7 +127,7 @@ const ItemUploadForm = ({decodedToken}) => {
       price: price,
       description: description,
       category: categories,
-      seller: decodedToken.id,
+      seller: user.id,
     }).then(response => {
       console.log(response);
     }).catch(error => {
@@ -162,9 +164,10 @@ const ItemUploadForm = ({decodedToken}) => {
         >
           <Typography variant="h6">Categories</Typography>
           {
-            categories.map((item, index) => (
-              <ListItem key={index}>{item}</ListItem>
-            ))
+            categories.map((item, index) => {
+              console.dir(item);
+              return <ListItem key={index}>{item}</ListItem>;
+            })
           }
           <TextField
             value={category}
@@ -195,21 +198,22 @@ const ItemUploadForm = ({decodedToken}) => {
   );
 };
 
-const Dashboard = ({ decodedToken }) => {
+const Dashboard = () => {
+  const { user } = useContext(AuthContext);
   return (
     <>
-      <Typography variant="h2" pt={8}>Welcome, {decodedToken.firstName}!</Typography>
+      <Typography variant="h2" pt={8}>Welcome, {user.firstName}!</Typography>
       <Grid container spacing={2} justifyContent={"space-around"}>
-        <Grid item xs={12} sm={6}>
-          <UserDetailsForm decodedToken={decodedToken} />
+        <Grid xs={12} sm={6}>
+          <UserDetailsForm />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <ItemUploadForm decodedToken={decodedToken}/>
+        <Grid xs={12} sm={6}>
+          <ItemUploadForm />
         </Grid>
       </Grid>
     </>
   );
-}
+};
 
 const DashboardPage = () => {
   useEffect(() => {
@@ -229,6 +233,6 @@ const DashboardPage = () => {
       <Dashboard />
     </Protected>
   )
-}
+};
 
 export default DashboardPage;

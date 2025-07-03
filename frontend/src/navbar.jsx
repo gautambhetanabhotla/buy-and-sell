@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -12,6 +12,8 @@ import DeliverIcon from '@mui/icons-material/DeliveryDining';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import LogoutIcon from '@mui/icons-material/Logout';
+
+import { AuthContext } from "./auth.jsx";
 
 // const Navbar = ({ctx, decodedToken}) => {
 //   const navigate = useNavigate();
@@ -44,9 +46,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 //   );
 // };
 
-const Navbar = ({ctx}) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const [value, setValue] = useState("Dashboard");
+  const ctx = useContext(AuthContext);
   return (
     <BottomNavigation
     showLabels

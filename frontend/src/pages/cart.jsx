@@ -1,16 +1,16 @@
-import Protected from "../auth.jsx";
+import Protected, { AuthContext } from "../auth.jsx";
 import Navbar from "../navbar.jsx";
 
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Typography, Card, CardContent, CardActions, Grid2 as Grid, Button } from "@mui/material";
 
-const Cart = ({ decodedToken }) => {
-
+const Cart = () => {
+  const ctx = useContext(AuthContext);
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    axios.get("/api/user/" + decodedToken.id + "/cart")
+    axios.get("/api/user/" + ctx.user.id + "/cart")
       .then((response) => {
         console.dir(response);
         setCartItems(response.data);
@@ -19,10 +19,10 @@ const Cart = ({ decodedToken }) => {
       .catch((error) => {
         console.dir(error);
       });
-  }, [decodedToken.id]);
+  }, [ctx.user.id]);
 
   const removeFromCart = (itemID) => {
-    axios.delete("/api/user/" + decodedToken.id + "/cart/" + itemID)
+    axios.delete("/api/user/" + ctx.user.id + "/cart/" + itemID)
       .then((response) => {
         console.dir(response);
         setCartItems(cartItems.filter(item => item._id !== itemID));
