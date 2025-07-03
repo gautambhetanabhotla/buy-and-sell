@@ -1,6 +1,7 @@
 # Buy and sell
 
 ## Tech stack
+
 - MongoDB for the database
 - React + Vite for the frontend
 - Express for the backend
@@ -8,7 +9,8 @@
 - Gemini 1.5 Flash for the chatbot
 
 ## Functionality
-- Login, logout and signup for emails ending under the domain `iiit.ac.in` or any subdomain.
+
+- Login, logout and signup with email.
 - Browse for items on sale, with provisions for adding items to cart, filtering based on name, categories and sellers.
 - Look at items in your cart, with the option to remove them from the cart and placing an order for the items.
 - Check out the orders you've placed. Filter between pending and closed orders.

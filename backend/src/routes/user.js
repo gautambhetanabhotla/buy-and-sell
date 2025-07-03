@@ -37,14 +37,10 @@ router.post('/signup', (req, res) => {
         if(req.body.password) delete req.body.password;
         const user = new userModel(req.body);
         user.save().then((user) => {
-            console.log("USER CREATED");
-            console.dir(user);
             res.status(200).json(user);
-        }).catch((err) => {
-            console.log("ERROR CREATING USER");
-            console.log(typeof(err));
-            console.dir(err);
-            res.status(500).json(err);
+        }).catch((error) => {
+            console.dir(error);
+            res.status(500).json(error);
         });
     });
 });
@@ -73,7 +69,6 @@ router.post('/login', (req, res) => {
                 res.status(200).json({token: token});
             }
             else {
-                // console.log("sending 401 response");
                 res.status(401).json();
             }
         });
@@ -149,7 +144,6 @@ router.get('/:id/cart', async (req, res) => {
 });
 
 router.delete('/:id/cart/:itemID', async (req, res) => {
-    console.log("DELETE FROM CART REQUEST");
     try {
         const user = await userModel.findById(req.params.id).exec();
         user.itemsInCart.splice(user.itemsInCart.indexOf(req.params.itemID), 1);
