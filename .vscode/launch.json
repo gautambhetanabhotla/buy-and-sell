@@ -6,7 +6,7 @@
     "configurations": [
         {
             "type": "node-terminal",
-            "name": "Run Script: dev",
+            "name": "Launch backend",
             "request": "launch",
             "command": "npm run dev",
             "cwd": "${workspaceFolder}/backend"
