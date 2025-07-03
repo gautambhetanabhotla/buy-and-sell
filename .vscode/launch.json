@@ -10,6 +10,15 @@
             "request": "launch",
             "command": "npm run dev",
             "cwd": "${workspaceFolder}/backend"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch frontend",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "runtimeArgs": ["--remote-debugging-port=9222"],
+            "sourceMaps": true,
         }
     ]
 }
