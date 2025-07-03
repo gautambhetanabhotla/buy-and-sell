@@ -1,5 +1,5 @@
 import Protected, { AuthContext } from "../auth.jsx";
-import Navbar from "../navbar.jsx";
+// import Navbar from "../navbar.jsx";
 
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
@@ -81,7 +81,6 @@ const Cart = () => {
 const CartPage = () => {
   return (
     <Protected>
-      <Navbar />
       <Cart />
     </Protected>
   );

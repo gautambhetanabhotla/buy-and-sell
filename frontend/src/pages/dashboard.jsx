@@ -4,7 +4,7 @@ import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 
 import { AuthContext } from "../auth.jsx";
-import Navbar from "../navbar.jsx";
+// import Navbar from "../navbar.jsx";
 import Protected from "../auth.jsx";
 
 import { Typography,
@@ -42,7 +42,7 @@ const UserDetailsForm = () => {
       email: email,
       age: age,
       contactNumber: contactNumber,
-      password: password,
+      password: password, 
     })
     .then(response => {
       setLoading(false);
@@ -229,7 +229,7 @@ const DashboardPage = () => {
   });
   return (
     <Protected>
-      <Navbar />
+      {/* <Navbar /> */}
       <Dashboard />
     </Protected>
   )

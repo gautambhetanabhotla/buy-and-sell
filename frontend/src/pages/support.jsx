@@ -1,5 +1,5 @@
 import Protected from "../auth.jsx";
-import Navbar from "../navbar.jsx";
+// import Navbar from "../navbar.jsx";
 
 import { Typography, TextField, Box, Paper } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
@@ -110,7 +110,6 @@ const Support = () => {
 const SupportPage = () => {
   return (
     <Protected>
-      <Navbar />
       <Support />
     </Protected>
   );

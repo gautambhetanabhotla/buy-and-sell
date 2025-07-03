@@ -34,7 +34,6 @@ const AuthProvider = ({ children }) => {
 
 const Protected = ({ children }) => {
   const ctx = useContext(AuthContext);
-  console.dir(ctx);
   if(!ctx.user) return <Navigate to="/?mode=login" />;
   return <>{children}</>;
 };

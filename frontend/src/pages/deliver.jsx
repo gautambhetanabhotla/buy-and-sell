@@ -1,5 +1,5 @@
 import Protected from "../auth.jsx";
-import Navbar from "../navbar.jsx";
+// import Navbar from "../navbar.jsx";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -121,7 +121,6 @@ const Deliver = () => {
 const DeliverPage = () => {
   return (
     <Protected>
-      <Navbar />
       <Deliver />
     </Protected>
   );

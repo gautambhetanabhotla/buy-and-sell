@@ -1,5 +1,5 @@
 import Protected from "../auth.jsx";
-import Navbar from "../navbar.jsx";
+// import Navbar from "../navbar.jsx";
 
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -159,7 +159,6 @@ const OrdersPage = () => {
   const string = queryParams.get('orders');
   return (
     <Protected>
-      <Navbar />
       <Box pt={9} justifyContent={"center"} alignItems={"center"} display={"flex"}>
         <ButtonGroup row>
           <Button

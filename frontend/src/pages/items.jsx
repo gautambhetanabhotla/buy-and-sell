@@ -1,5 +1,5 @@
 import Protected, {AuthContext} from "../auth.jsx";
-import Navbar from "../navbar.jsx";
+// import Navbar from "../navbar.jsx";
 
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -177,14 +177,11 @@ const Items = () => {
   );
 }
 
-const ItemsPage = ({ decodedToken }) => {
+const ItemsPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   return (
-    <Protected>
-      <Navbar />
-      {queryParams.get('item') ? <Item decodedToken={decodedToken}/> : <Items />}
-    </Protected>
+    <Protected>{queryParams.get('item') ? <Item /> : <Items />}</Protected>
   );
 };
 
