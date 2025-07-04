@@ -38,7 +38,7 @@ router.get('/to-deliver/:num', async (req, res) => {
         {
             $match: {
                 status: 'pending',
-                'item.seller': new mongoose.Types.ObjectId(userDetails.id),
+                'item.seller': mongoose.Types.ObjectId.createFromHexString(userDetails.id),
             }
         },
         {
@@ -74,7 +74,7 @@ router.get('/pending/:num', (req, res) => {
     const orders = orderModel.aggregate([
         {
             $match: { 
-                buyer: new mongoose.Types.ObjectId(userDetails.id),
+                buyer: mongoose.Types.ObjectId.createFromHexString(userDetails.id),
                 status: 'pending'
             }
         },
@@ -274,7 +274,7 @@ router.get('/delivered/:num', (req, res) => {
         {
             $match: {
                 status: 'delivered',
-                'item.seller': new mongoose.Types.ObjectId(userDetails.id),
+                'item.seller': mongoose.Types.ObjectId.createFromHexString(userDetails.id),
             }
         },
         {
@@ -340,7 +340,7 @@ router.get('/received/:num', (req, res) => {
         {
             $match: {
                 status: 'delivered',
-                'buyer._id': new mongoose.Types.ObjectId(userDetails.id),
+                'buyer._id': mongoose.Types.ObjectId.createFromHexString(userDetails.id),
             }
         },
         {

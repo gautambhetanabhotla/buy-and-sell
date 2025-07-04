@@ -1,7 +1,7 @@
-import Protected, { AuthContext } from "../auth.jsx";
+import Protected from "../auth.jsx";
 // import Navbar from "../navbar.jsx";
 
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
