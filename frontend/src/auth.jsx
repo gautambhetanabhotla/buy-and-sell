@@ -10,6 +10,7 @@ const AuthProvider = ({ children }) => {
   let decodedToken = null;
   try {
     decodedToken = jwtDecode(localStorage.getItem('buy-sell-auth-token'));
+    axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem('buy-sell-auth-token');
   } catch {
     decodedToken = null;
   }

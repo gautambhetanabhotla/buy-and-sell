@@ -1,6 +1,4 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
-import process from 'process';
 
 import { itemModel, userModel } from '../models.js';
 import validateAuth from '../auth.js';
@@ -8,23 +6,9 @@ import validateAuth from '../auth.js';
 const router = express.Router();
 router.use(express.json());
 
-router.get('/limit/:num', async (req, res) => {
+router.get('/', async (req, res) => {
 
-    const authHeader = req.headers.authorization;
-    if(!authHeader) {
-        res.status(401).send();
-        return;
-    }
-    try {
-        console.log(authHeader.split(' ')[1]);
-        jwt.verify(authHeader.split(' ')[1], process.env.JWTSECRET);
-    } catch {
-        res.status(401).send();
-        return;
-    }
-
-    const items = await itemModel.aggregate([
-        { $limit: parseInt(req.params.num) },
+    const aggregationPipeline = [
         { $match: { isOrdered: false } },
         {
             $lookup: {
@@ -47,7 +31,13 @@ router.get('/limit/:num', async (req, res) => {
                 'sellerDetails.lastName': 1
             }
         }
-    ]);
+    ]
+
+    if (req.query.limit) {
+        aggregationPipeline.push({ $limit: parseInt(req.query.limit) });
+    }
+
+    const items = await itemModel.aggregate(aggregationPipeline);
     res.status(200).json(items);
 });
 
@@ -70,17 +60,17 @@ router.post('/', (req, res) => {
 });
 
 router.post('/addtocart/:id', (req, res) => {
-    console.log('ADD TO CART REQUEST');
     const userDetails = validateAuth(req);
+    if (!userDetails) return res.status(401).send();
     const user = userModel.findById(userDetails.id);
     user.exec().then((user) => {
         const item = itemModel.findById(req.params.id);
         item.exec().then((item) => {
-            console.log('SELLER ID: ' + item.seller + ', BUYER ID: ' + user.id);
-            if(!user.itemsInCart.includes(req.params.id)
+            if (!item) return res.status(404).send();
+            if (!user.itemsInCart.includes(req.params.id)
                 && !item.seller.equals(user.id)
                 && !item.isOrdered)
-                    user.itemsInCart.push(req.params.id); // same item gettin gpushed twice, and make sure ordered items dont get pushed onto cart
+                    user.itemsInCart.push(req.params.id); // same item getting pushed twice, and make sure ordered items dont get pushed onto cart
             user.save().then((user) => {
                 res.status(200).json(user);
             }).catch((err) => {

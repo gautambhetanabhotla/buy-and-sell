@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useContext } from "react";
 
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -15,40 +15,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 import { AuthContext } from "./auth.jsx";
 
-// const Navbar = ({ctx, decodedToken}) => {
-//   const navigate = useNavigate();
-//   return (
-//     <nav>
-//       <ul>
-//         <li>
-//           <NavLink to="/dashboard">Dashboard</NavLink>
-//         </li>
-//         <li>
-//           <NavLink to="/items">Search Items</NavLink>
-//         </li>
-//         <li>
-//           <NavLink to="/orders">Orders</NavLink>
-//         </li>
-//         <li>
-//           <NavLink to="/deliver">Deliver</NavLink>
-//         </li>
-//         <li>
-//           <NavLink to="/cart">Cart</NavLink>
-//         </li>
-//         <li>
-//           <NavLink to="/support">Support</NavLink>
-//         </li>
-//         <li>
-//           <button onClick={() => {ctx.logout(); console.log("navigating"); navigate('/?mode=login')}}>Logout</button>
-//         </li>
-//       </ul>
-//     </nav>
-//   );
-// };
-
 const Navbar = () => {
   const navigate = useNavigate();
-  const [value, setValue] = useState("Dashboard");
+  const location = useLocation();
+  const [value, setValue] = useState(location.pathname.split('/')[1]);
   const ctx = useContext(AuthContext);
   return (
     <BottomNavigation

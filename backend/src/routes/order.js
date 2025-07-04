@@ -149,8 +149,6 @@ const orderAnItem = async (itemID, userID) => {
 
     const user = await userModel.findById(userID);
     if(user) {
-        // console.dir(user.itemsInCart);
-        // console.dir(user.itemsInCart[0].buffer.toString());
         user.itemsInCart.splice(user.itemsInCart.findIndex((id) => id.equals(itemID)), 1);
         await user.save();
     }
@@ -231,7 +229,6 @@ router.get('/:id/regenerate', (req, res) => {
 });
 
 router.post('/:id/complete', async (req, res) => {
-    console.log('RECEIVED COMPLETE REQUEST');
     const userDetails = validateAuth(req);
     if(!userDetails) {
         res.status(401).send();

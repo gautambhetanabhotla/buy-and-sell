@@ -165,7 +165,6 @@ const ItemUploadForm = () => {
           <Typography variant="h6">Categories</Typography>
           {
             categories.map((item, index) => {
-              console.dir(item);
               return <ListItem key={index}>{item}</ListItem>;
             })
           }

@@ -1,7 +1,7 @@
-import Protected from "../auth.jsx";
+import Protected, { AuthContext } from "../auth.jsx";
 // import Navbar from "../navbar.jsx";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -92,6 +92,7 @@ const PendingOrders = () => {
     axios.get('/api/order/pending/100').then(res => {
       setOrders(res.data);
     }).catch(err => {
+      console.log(axios.defaults.headers.common['Authorization']);
       console.error(err);
     });
   }, []);
@@ -160,7 +161,7 @@ const OrdersPage = () => {
   return (
     <Protected>
       <Box pt={9} justifyContent={"center"} alignItems={"center"} display={"flex"}>
-        <ButtonGroup row>
+        <ButtonGroup>
           <Button
             variant={!string ? "contained" : (string === "pending" ? "contained" : "outlined")}
             onClick={() => navigate('/orders?orders=pending')}

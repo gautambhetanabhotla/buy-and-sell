@@ -44,17 +44,17 @@ const Cart = () => {
     <>
       <Typography variant="h2" pt={8}>Cart</Typography>
       <Grid container spacing={2} justifyContent="space-around" xs={12} sm={6} md={6} lg={6}>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
+        <Grid xs={12} sm={12} md={12} lg={12}>
           {cartItems.map((item) => (
             <Card key={item._id}>
               <Grid container xs={12} sm={12} md={12} lg={12}>
-                <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Grid xs={12} sm={12} md={12} lg={12}>
                   <CardContent>
                     <Typography variant="h5">{item.name}</Typography>
                     <Typography variant="h6">{item.price}</Typography>
                   </CardContent>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <CardActions>
                     <Button onClick={() => removeFromCart(item._id)}>Remove</Button>
                   </CardActions>
@@ -63,7 +63,7 @@ const Cart = () => {
             </Card>
           ))}
         </Grid>
-        <Grid item>
+        <Grid>
           <Card>
             <CardContent>
               <Typography variant="h3">Total: {cartItems.reduce((acc, item) => acc + item.price, 0)}</Typography>

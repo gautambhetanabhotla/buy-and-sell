@@ -52,7 +52,7 @@ const Item = () => {
   <>
     {/* <Typography variant="h2">Item</Typography> */}
     <div style={{ display: 'flex', justifyContent: 'center', alighItems: 'center', width: '70%', margin: 'auto' }}>
-      <Card sx={{ minWidth: '30%', mt: '8%' }}>
+      <Card sx={{ mt: '8%' }}>
         <CardContent sx={{ paddingLeft: '10%', paddingRight: '10%' }}>
           <Typography variant="h3">{item.name}</Typography>
           <Typography variant="body1" mt={3}>{item.description}</Typography>
@@ -89,8 +89,7 @@ const Items = () => {
   }
 
   useEffect(() => {
-    axios.get('/api/item/limit/100').then((response) => {
-      console.dir(response.data);
+    axios.get('/api/item/?limit=100').then((response) => {
       setItems(response.data);
       setAvailableCategories([...new Set(response.data.map(item => item.category).flat())]);
     }).catch((error) => {
@@ -103,7 +102,7 @@ const Items = () => {
       <Typography variant="h2" pt={8} pl={3}>Browse items</Typography>
       <Container>
         <Grid container spacing={2}>
-          <Grid item sm={12} md={6} lg={6} xl={6} minWidth={400}>
+          <Grid sm={12} md={6} lg={6} xl={6}>
             <Autocomplete
               variant="flat"
               options={items.map((item) => item.name)}
@@ -117,10 +116,10 @@ const Items = () => {
               fullWidth
             />
           </Grid>
-          <Grid item sm={12} md={6} lg={6} xl={6} minWidth={400}>
+          <Grid sm={12} md={6} lg={6} xl={6}>
             <Select
               label="Categories"
-              minWidth={200}
+              // minWidth={200}
               multiple
               value={selectedCategories}
               onChange={handleSelectedCategoryChange}
