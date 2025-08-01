@@ -17,7 +17,7 @@
     "@material/web": "^2.3.0",
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "body-parser": "^1.20.3",
     "eventemitter3": "^5.0.1",
     "jwt-decode": "^4.0.0",
